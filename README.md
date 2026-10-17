@@ -5,6 +5,7 @@ Alle promotiematerialen van DHC voor Drachten Maakt 't 2026: huisstijl, campagne
 | Map | Inhoud |
 |---|---|
 | `huisstijl/` | Logo (SVG in zwart, wit, geel, groen; liggend en staand), iconen, favicon, PNG-exports, animaties, patronen, de huisstijlpagina en de Beurskit-startpagina |
+| `huisstijl/illustraties/` | Isometrische illustraties uit de contentstudio (autobrug, draaibank, kolomboormachine, lasplek, werkbank) als SVG en PNG, licht en donker |
 | `huisstijl/bron/` | Bronscripts (vectorlogo, animatie, patronen) en paginabronnen |
 | `campagneplanner/` | Campagneplanner met flyer en presentatie |
 | `contentstudio/` | Contentstudio voor social posts |
