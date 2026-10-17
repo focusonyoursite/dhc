@@ -1,0 +1,1087 @@
+<title>DHC Contentstudio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2264%22%20height%3D%2264%22%20role%3D%22img%22%20aria-label%3D%22Drachtster%20Hobby%20Club%22%3E%3Ctitle%3EDrachtster%20Hobby%20Club%3C/title%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2210%22%20fill%3D%22%232B2828%22/%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20fill-rule%3D%22evenodd%22%20transform%3D%22translate%285.12%2016.9493%29%20scale%280.03579%29%22%20d%3D%22M0%200H100A420.5%20420.5%200%200%201%20482%20244.73V596.27A420.5%20420.5%200%200%201%20100%20841H0Z%20M0%20199H126A203%20203%200%200%201%20126%20605H0Z%20M482%200h39V841h-39Z%20M675%200h152v320H675ZM675%20521h152v320H675Z%20M1502%200H1402A420.5%20420.5%200%200%200%201020%20244.73V596.27A420.5%20420.5%200%200%200%201402%20841H1502Z%20M1502%20199H1376A203%20203%200%200%200%201376%20605H1502Z%20M981%200h39V841h-39Z%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Saira+Stencil+One&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.1/build/mp4-muxer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<style>
+/* Layout: werkplaatsbord. Bovenbalk met tabbladen; Studio = gereedschapskolom links, werkvlak met canvas in het midden, uitvoerkolom rechts. */
+:root{
+  --bg:#ecece7; --panel:#f8f8f5; --raise:#ffffff; --ink:#1a1b19; --muted:#666a63; --line:#d4d5ce; --line2:#e3e3dd;
+  --accent:#f2b705; --accent-ink:#1a1500; --machine:#2d6a52; --machine-ink:#ffffff;
+  --good:#2f7d4a; --warn:#a96400; --bad:#b3362b; --sel:#1a1b19; --sel-ink:#f8f8f5;
+  --canvas-bg:#dcdcd5;
+  --font-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --font-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121412; --panel:#1a1c1a; --raise:#222522; --ink:#e9eae4; --muted:#9da197; --line:#30342f; --line2:#272a26;
+  --accent:#ffc928; --accent-ink:#1a1500; --machine:#4f9b80; --machine-ink:#0c1410;
+  --good:#5cc27f; --warn:#f0a43a; --bad:#ef7363; --sel:#e9eae4; --sel-ink:#121412; --canvas-bg:#0c0d0c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121412; --panel:#1a1c1a; --raise:#222522; --ink:#e9eae4; --muted:#9da197; --line:#30342f; --line2:#272a26;
+  --accent:#ffc928; --accent-ink:#1a1500; --machine:#4f9b80; --machine-ink:#0c1410;
+  --good:#5cc27f; --warn:#f0a43a; --bad:#ef7363; --sel:#e9eae4; --sel-ink:#121412; --canvas-bg:#0c0d0c; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:14px;line-height:1.45;display:flex;flex-direction:column}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+header.top{background:var(--ink);color:var(--bg);flex:none}
+header.top .bar{display:flex;align-items:center;gap:18px;padding-block:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .blogo{height:24px;width:auto;flex:none}
+.logoprev svg{height:84px;width:auto;color:var(--ink)}
+.brand .mark{font-family:var(--font-display);font-weight:900;font-size:22px;background:var(--accent);color:var(--accent-ink);padding:2px 8px 0;line-height:1.1;letter-spacing:.02em}
+.brand b{font-family:var(--font-display);font-weight:800;font-size:22px;letter-spacing:.03em}
+nav.views{display:flex;gap:2px}
+nav.views button{background:transparent;border:0;color:inherit;opacity:.7;padding:7px 12px;border-radius:4px;cursor:pointer;font-weight:600}
+nav.views button.on{opacity:1;background:color-mix(in srgb,var(--bg) 16%,transparent)}
+.top .meta{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:12px}
+.count{font-family:var(--font-display);font-weight:800;font-size:20px;color:var(--accent)}
+.hazard{height:5px;background:repeating-linear-gradient(135deg,var(--accent) 0 12px,var(--ink) 12px 24px);flex:none}
+
+.btn{border:1px solid var(--line);background:var(--raise);border-radius:4px;padding:7px 12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;justify-content:center;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.btn.dark{background:var(--sel);color:var(--sel-ink);border-color:transparent}
+.btn.ghost{background:transparent}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:4px 8px;font-size:12px}
+.label{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+h2{font-family:var(--font-display);font-weight:800;font-size:28px;margin:0;line-height:1.05;letter-spacing:.01em}
+h3{font-family:var(--font-display);font-weight:800;font-size:18px;margin:0;letter-spacing:.02em}
+p{margin:0}
+.note{font-size:12px;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap;letter-spacing:.02em}
+.st-idee{color:var(--muted)}.st-concept{color:var(--warn)}.st-klaar{color:var(--machine)}.st-gepland{color:#3e63dd}.st-gepubliceerd{color:var(--good)}
+
+main{flex:1;min-height:0;display:flex}
+.view{flex:1;min-height:0;min-width:0}
+.view[hidden]{display:none!important}
+
+/* Studio */
+.studio{display:grid;grid-template-columns:300px minmax(0,1fr) 320px;height:100%}
+.col{overflow:auto;min-width:0}
+.left,.right{background:var(--panel);border-right:1px solid var(--line)}
+.right{border-right:0;border-left:1px solid var(--line)}
+.sec{padding:14px 16px;border-bottom:1px solid var(--line2);display:flex;flex-direction:column;gap:10px}
+.sec > .label{display:flex;justify-content:space-between;align-items:center}
+.assets{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.asset{border:1px solid var(--line);border-radius:6px;background:var(--raise);padding:4px;cursor:pointer;display:flex;flex-direction:column;gap:2px;text-align:left}
+.asset img{width:100%;aspect-ratio:4/3;object-fit:contain;display:block}
+.asset span{font-size:12px;font-weight:600;padding:0 4px 2px}
+.asset.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+.swatches{display:flex;flex-wrap:wrap;gap:6px}
+.sw{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);cursor:pointer;position:relative;padding:0}
+.sw.on{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--ink)}
+.sw.wide{width:auto;border-radius:6px;padding:0 10px;height:30px;font-size:12px;font-weight:600}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:12px;font-weight:600}
+.field input[type=text],.field input[type=url],.field input[type=date],.field textarea,.field select,select.inp{border:1px solid var(--line);border-radius:4px;padding:7px 9px;background:var(--raise);width:100%}
+.field textarea{resize:vertical;min-height:56px}
+.row{display:flex;gap:8px;align-items:center}
+.row > *{min-width:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input[type=range]{width:100%;accent-color:var(--ink)}
+.tog{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.tog input{accent-color:var(--ink);width:16px;height:16px}
+
+.center{display:flex;flex-direction:column;background:var(--canvas-bg);min-width:0}
+.fmtbar{display:flex;gap:6px;padding:10px 14px;flex-wrap:wrap;align-items:center;background:var(--panel);border-bottom:1px solid var(--line)}
+.fmtbar .grp{display:flex;gap:2px;background:var(--bg);border-radius:6px;padding:2px}
+.fmtbar .grp button{border:0;background:transparent;padding:5px 10px;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted)}
+.fmtbar .grp button.on{background:var(--raise);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.fmtbar select{max-width:260px}
+.stage{flex:1;min-height:320px;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden}
+.stage canvas{max-width:100%;max-height:100%;box-shadow:0 10px 30px rgba(0,0,0,.25),0 0 0 1px rgba(0,0,0,.08);background:#fff}
+.stagebar{display:flex;align-items:center;gap:12px;padding:8px 14px;background:var(--panel);border-top:1px solid var(--line);flex-wrap:wrap}
+.stagebar .info{font-size:12px;color:var(--muted)}
+.busy{position:absolute;inset:auto 16px 16px auto;background:var(--ink);color:var(--bg);padding:8px 12px;border-radius:4px;font-size:12px;display:flex;gap:10px;align-items:center}
+[hidden]{display:none!important}
+.prog{width:140px;height:6px;background:color-mix(in srgb,var(--bg) 25%,transparent);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);width:0}
+
+.pack{display:flex;flex-direction:column;gap:2px;max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:4px;background:var(--raise);padding:6px}
+.pack label{display:flex;gap:8px;align-items:center;font-size:12px;padding:2px 2px}
+.pack .g{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:6px 2px 2px}
+.ai-out{display:flex;flex-direction:column;gap:8px}
+.ai-card{border:1px solid var(--line);border-radius:6px;padding:10px;background:var(--raise);display:flex;flex-direction:column;gap:4px;text-align:left;cursor:pointer}
+.ai-card:hover{border-color:var(--ink)}
+.ai-card b{font-family:var(--font-display);font-size:18px;letter-spacing:.02em;text-transform:uppercase;line-height:1.05}
+.ai-card small{color:var(--muted)}
+.msg{font-size:12px;padding:8px 10px;border-radius:4px;background:var(--raise);border:1px solid var(--line)}
+.msg.err{border-color:var(--bad);color:var(--bad)}
+.msg.ok{border-color:var(--good);color:var(--good)}
+.caption{white-space:pre-wrap;font-size:13px;background:var(--raise);border:1px solid var(--line);border-radius:4px;padding:10px;max-height:220px;overflow:auto}
+
+/* Library */
+.pagewrap{height:100%;overflow:auto}
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:22px 14px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;padding-bottom:40px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.card .thumb{background:var(--canvas-bg);aspect-ratio:1;display:flex;align-items:center;justify-content:center;padding:12px}
+.card .thumb canvas{max-width:100%;max-height:100%;box-shadow:0 3px 10px rgba(0,0,0,.2)}
+.card .meta{padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.card .meta b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card .acts{display:flex;gap:6px;padding:0 12px 12px;flex-wrap:wrap}
+.empty{padding:40px;text-align:center;border:2px dashed var(--line);border-radius:8px;color:var(--muted);display:flex;flex-direction:column;gap:10px;align-items:center}
+
+/* Planning */
+.plan{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;padding-bottom:40px}
+.day{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.day.event{border:2px solid var(--accent)}
+.day.past{opacity:.6}
+.day .dh{display:flex;justify-content:space-between;align-items:baseline}
+.day .dh b{font-family:var(--font-display);font-size:20px;font-weight:800}
+.pitem{display:flex;gap:8px;align-items:center;padding:6px;border-radius:4px;background:var(--raise);border:1px solid var(--line2);cursor:pointer;min-width:0}
+.pitem canvas{flex:none;width:36px;height:36px;object-fit:contain;background:var(--canvas-bg)}
+.pitem span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+
+/* Brand */
+.brandgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;padding-bottom:40px}
+@media (max-width:860px){.brandgrid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.logoprev{height:120px;border:1px dashed var(--line);border-radius:6px;display:flex;align-items:center;justify-content:center;background:var(--raise)}
+.logoprev img{max-height:100px;max-width:90%}
+
+@media (max-width:1100px){.studio{grid-template-columns:270px minmax(0,1fr)}.right{grid-column:1 / -1;border-left:0;border-top:1px solid var(--line)}}
+@media (max-width:760px){
+  .studio{display:flex;flex-direction:column;height:auto}
+  main{display:block;overflow:auto}
+  .view{height:auto}
+  .center{order:-1}
+  .stage{min-height:300px;height:60vh}
+  .left,.right{border:0;border-top:1px solid var(--line)}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="bar gut">
+    <div class="brand"><svg class="blogo" viewBox="0 0 1502 841" role="img" aria-label="DHC"><path fill="currentColor" fill-rule="evenodd" d="M0 0H100A420.5 420.5 0 0 1 482 244.73V596.27A420.5 420.5 0 0 1 100 841H0Z M0 199H126A203 203 0 0 1 126 605H0Z M482 0h39V841h-39Z M675 0h152v320H675ZM675 521h152v320H675Z M1502 0H1402A420.5 420.5 0 0 0 1020 244.73V596.27A420.5 420.5 0 0 0 1402 841H1502Z M1502 199H1376A203 203 0 0 0 1376 605H1502Z M981 0h39V841h-39Z"/></svg><b>CONTENTSTUDIO</b></div>
+    <nav class="views" id="views">
+      <button type="button" data-view="studio" class="on">Studio</button>
+      <button type="button" data-view="lib">Bibliotheek</button>
+      <button type="button" data-view="plan">Planning</button>
+      <button type="button" data-view="brand">Merk</button>
+    </nav>
+    <div class="meta"><span id="syncState">Laden…</span><span><span class="count mono" id="days">12</span> dagen tot 28 okt</span></div>
+  </div>
+</header>
+<div class="hazard"></div>
+
+<main>
+<!-- STUDIO -->
+<section class="view" id="v-studio">
+  <div class="studio">
+    <div class="col left">
+      <div class="sec">
+        <div class="label">Beeld <span class="note" id="assetName"></span></div>
+        <div class="assets" id="assets"></div>
+      </div>
+      <div class="sec">
+        <div class="label">Stijl</div>
+        <div class="field"><label>Thema</label><div class="swatches" id="themes"></div></div>
+        <div class="field"><label>Accentkleur</label><div class="swatches" id="accents"></div></div>
+        <div class="grid2">
+          <div class="field"><label for="bgStyle">Achtergrond</label><select id="bgStyle" class="inp"><option value="vlak">Vlak</option><option value="raster">Gaatjesbord</option><option value="lijnen">Blauwdrukraster</option><option value="spot">Spotlicht</option></select></div>
+          <div class="field"><label for="fontPair">Letter</label><select id="fontPair" class="inp"><option value="werkplaats">Werkplaats</option><option value="stencil">Stencil</option><option value="modern">Modern</option></select></div>
+        </div>
+        <div class="field"><label for="zoom">Uitsnede: zoom <span class="mono" id="zoomV"></span></label><input type="range" id="zoom" min="0.7" max="2.2" step="0.01"></div>
+        <div class="grid2">
+          <div class="field"><label for="panX">Horizontaal</label><input type="range" id="panX" min="-0.5" max="0.5" step="0.01"></div>
+          <div class="field"><label for="panY">Verticaal</label><input type="range" id="panY" min="-0.5" max="0.5" step="0.01"></div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="label">Tekst <button class="btn sm primary" type="button" id="aiWrite">Schrijf met AI</button></div>
+        <div class="field"><label for="angle">Invalshoek</label>
+          <select id="angle" class="inp">
+            <option value="rekensom">De rekensom: € 85 per jaar tegenover huren</option>
+            <option value="scrollen">Handen in plaats van scrollen</option>
+            <option value="pov">TikTok-stijl: POV, je kunt het zelf</option>
+            <option value="1957">Sinds 1957: de volgende generatie</option>
+            <option value="beurs">Kom langs op Drachten Maakt 't</option>
+          </select></div>
+        <div class="ai-out" id="aiOut"></div>
+        <div class="field"><label for="t-eyebrow">Bovenregel</label><input type="text" id="t-eyebrow"></div>
+        <div class="field"><label for="t-headline">Kop <span class="note">(*woord* krijgt de accentkleur)</span></label><textarea id="t-headline" rows="2"></textarea></div>
+        <div class="field"><label for="t-body">Tekst</label><textarea id="t-body" rows="3"></textarea></div>
+        <div class="field"><label for="t-cta">Knop</label><input type="text" id="t-cta"></div>
+        <label class="tog"><input type="checkbox" id="t-badgeOn"> Prijsbadge</label>
+        <div class="grid2"><div class="field"><label for="t-badge">Badge groot</label><input type="text" id="t-badge"></div><div class="field"><label for="t-badgeSub">Badge klein</label><input type="text" id="t-badgeSub"></div></div>
+        <label class="tog"><input type="checkbox" id="t-qrOn"> QR-code (drukwerk en scherm)</label>
+        <div class="field"><label for="t-qr">QR-adres</label><input type="url" id="t-qr"></div>
+        <div class="field"><label for="t-footer">Voetregel</label><input type="text" id="t-footer"></div>
+        <label class="tog"><input type="checkbox" id="t-motion"> Tekst animeert in bij video</label>
+      </div>
+    </div>
+
+    <div class="col center">
+      <div class="fmtbar">
+        <div class="grp" id="groups"></div>
+        <select id="format" class="inp" aria-label="Formaat"></select>
+      </div>
+      <div class="stage" id="stage"><canvas id="cv"></canvas><div class="busy" id="busy" hidden><span id="busyT">Bezig…</span><div class="prog"><i id="busyP"></i></div></div></div>
+      <div class="stagebar">
+        <button class="btn sm" type="button" id="play">Afspelen</button>
+        <label class="tog"><input type="checkbox" id="guides" checked> Hulplijnen</label>
+        <span class="info mono" id="fmtInfo"></span>
+      </div>
+    </div>
+
+    <div class="col right">
+      <div class="sec">
+        <div class="label">Exporteren</div>
+        <div class="grid2">
+          <button class="btn dark" type="button" id="exPng">PNG</button>
+          <button class="btn" type="button" id="exPdf">PDF drukklaar</button>
+        </div>
+        <div class="row"><select id="dur" class="inp" aria-label="Duur video" style="flex:0 0 90px"><option value="6">6 sec</option><option value="10" selected>10 sec</option><option value="15">15 sec</option></select><button class="btn" type="button" id="exMp4" style="flex:1">Video (MP4)</button></div>
+        <button class="btn ghost sm" type="button" id="exSvg">Alleen de illustratie als SVG</button>
+        <div class="msg" id="exMsg" hidden></div>
+      </div>
+      <div class="sec">
+        <div class="label">Campagnepakket <span><button class="btn sm ghost" type="button" id="packAll">Alles</button><button class="btn sm ghost" type="button" id="packNone">Niets</button></span></div>
+        <div class="pack" id="pack"></div>
+        <label class="tog"><input type="checkbox" id="packAi"> Teksten per kanaal laten inkorten door AI</label>
+        <div class="grid2"><button class="btn primary" type="button" id="packZip">ZIP met PNG's</button><button class="btn" type="button" id="packLib">Naar bibliotheek</button></div>
+      </div>
+      <div class="sec">
+        <div class="label">Social-bericht</div>
+        <button class="btn" type="button" id="aiCaption">Schrijf bijschrift, hashtags en alt-tekst</button>
+        <div id="capOut"></div>
+      </div>
+      <div class="sec">
+        <div class="label">Opslaan <span class="note" id="editing"></span></div>
+        <div class="field"><label for="s-title">Titel</label><input type="text" id="s-title"></div>
+        <div class="grid2">
+          <div class="field"><label for="s-status">Status</label><select id="s-status" class="inp"><option value="idee">Idee</option><option value="concept">Concept</option><option value="klaar">Klaar</option><option value="gepland">Gepland</option><option value="gepubliceerd">Gepubliceerd</option></select></div>
+          <div class="field"><label for="s-date">Datum</label><input type="date" id="s-date"></div>
+        </div>
+        <div class="grid2"><button class="btn dark" type="button" id="save">Opslaan</button><button class="btn" type="button" id="saveNew">Als nieuw</button></div>
+        <button class="btn ghost sm" type="button" id="newDesign">Nieuw ontwerp</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIBRARY -->
+<section class="view pagewrap" id="v-lib" hidden>
+  <div class="gut">
+    <div class="pagehead"><div><div class="label">Alle content</div><h2>Bibliotheek</h2></div>
+      <div class="filters" id="libFilters"></div></div>
+    <div class="lib" id="lib"></div>
+  </div>
+</section>
+
+<!-- PLANNING -->
+<section class="view pagewrap" id="v-plan" hidden>
+  <div class="gut">
+    <div class="pagehead"><div><div class="label">16 oktober t/m 15 november</div><h2>Planning</h2></div><p class="note" style="max-width:46ch">Geef een ontwerp een datum en status in de Studio. Ontwerpen zonder datum staan onderaan.</p></div>
+    <div class="plan" id="plan"></div>
+  </div>
+</section>
+
+<!-- BRAND -->
+<section class="view pagewrap" id="v-brand" hidden>
+  <div class="gut">
+    <div class="pagehead"><div><div class="label">Huisstijl voor alle uitingen</div><h2>Merk</h2></div></div>
+    <div class="brandgrid">
+      <div class="panel">
+        <h3>Logo</h3>
+        <div class="logoprev" id="logoPrev"></div>
+        <div class="row"><input type="file" id="logoFile" accept="image/png,image/svg+xml,image/jpeg,image/webp"><button class="btn sm ghost" type="button" id="logoClear">Standaardlogo gebruiken</button></div>
+        <p class="note" id="logoNote">Het DHC-logo staat standaard op alle uitingen en kleurt mee met het thema. Upload alleen een bestand als je het wilt vervangen.</p>
+        <div class="grid2">
+          <div class="field"><label for="b-mark">Woordmerk</label><input type="text" id="b-mark"></div>
+          <div class="field"><label for="b-name">Clubnaam</label><input type="text" id="b-name"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Standaardteksten</h3>
+        <div class="field"><label for="b-footer">Voetregel</label><input type="text" id="b-footer"></div>
+        <div class="field"><label for="b-qr">Standaard QR-adres</label><input type="url" id="b-qr"></div>
+        <div class="field"><label for="b-facts">Feiten voor de AI</label><textarea id="b-facts" rows="8"></textarea></div>
+        <p class="note">De AI gebruikt deze feiten bij elke tekst, zodat prijzen en tijden kloppen.</p>
+        <button class="btn dark" type="button" id="b-save">Merk opslaan</button>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+/*DATA*/
+/* ---------------- Formaten ---------------- */
+const MM = (mm, dpi) => Math.round(mm / 25.4 * dpi);
+const FORMATS = [
+  {id:'ig-post', g:'social', name:'Instagram post 4:5', w:1080, h:1350, video:true},
+  {id:'ig-square', g:'social', name:'Instagram/Facebook vierkant', w:1080, h:1080, video:true},
+  {id:'story', g:'social', name:'Story, Reel, TikTok 9:16', w:1080, h:1920, video:true, story:true},
+  {id:'fb-link', g:'social', name:'Facebook/LinkedIn link', w:1200, h:630, video:true},
+  {id:'fb-event', g:'social', name:'Facebook-evenement omslag', w:1920, h:1005, video:false},
+  {id:'mrec', g:'online', name:'Display rechthoek 300×250', w:300, h:250, scale:2},
+  {id:'leader', g:'online', name:'Leaderboard 728×90', w:728, h:90, scale:2},
+  {id:'sky', g:'online', name:'Skyscraper 160×600', w:160, h:600, scale:2},
+  {id:'half', g:'online', name:'Half page 300×600', w:300, h:600, scale:2},
+  {id:'mobile', g:'online', name:'Mobiele banner 320×100', w:320, h:100, scale:2},
+  {id:'screen', g:'scherm', name:'Beursscherm 16:9', w:1920, h:1080, video:true, qr:true},
+  {id:'screen-p', g:'scherm', name:'Schermzuil staand 9:16', w:1080, h:1920, video:true, qr:true},
+  {id:'a5', g:'print', name:'Flyer A5', mm:[148,210], dpi:300, qr:true},
+  {id:'a4', g:'print', name:'Poster A4', mm:[210,297], dpi:300, qr:true},
+  {id:'a3', g:'print', name:'Poster A3', mm:[297,420], dpi:300, qr:true},
+  {id:'card', g:'print', name:'QR-kaartje 85×55', mm:[85,55], dpi:300, qr:true},
+  {id:'rollup', g:'print', name:'Roll-up 85×200 cm', mm:[850,2000], dpi:100, qr:true},
+  {id:'banner', g:'print', name:'Spandoek 300×100 cm', mm:[3000,1000], dpi:50, qr:true},
+];
+const GROUPS = {social:'Social', online:'Online', scherm:'Scherm', print:'Drukwerk'};
+for (const f of FORMATS){
+  if (f.mm){ f.bleed=3; f.px=[MM(f.mm[0]+6,f.dpi), MM(f.mm[1]+6,f.dpi)]; f.bleedPx=MM(3,f.dpi); f.safePx=MM(f.mm[0]>500?30:5,f.dpi); }
+  else { f.px=[f.w,f.h]; f.bleedPx=0; f.safePx=0; }
+}
+const fmtById = id => FORMATS.find(f=>f.id===id) || FORMATS[0];
+
+/* ---------------- Thema's ---------------- */
+const THEMES = {
+  papier:{name:'Papier', base:'light', bg:'#f2f2ef', bg2:'#dcdcd6', ink:'#18181a', sub:'#5b5b5f', vars:''},
+  werkplaats:{name:'Werkplaats', base:'light', bg:'#2d5f4f', bg2:'#3a705e', ink:'#ffffff', sub:'#d3e5dc', vars:'--anatomy-halo:#06231a;--anatomy-halo-opacity:.6;'},
+  nacht:{name:'Nacht', base:'dark', bg:'#0e0f0f', bg2:'#232524', ink:'#f1f1ee', sub:'#a7a7a3', vars:''},
+  blauwdruk:{name:'Blauwdruk', base:'dark', bg:'#123a66', bg2:'#2b5a8e', ink:'#ffffff', sub:'#bcd4f0', vars:'--anatomy-paper:#164477;--anatomy-face:#1a4c84;--anatomy-top:#1d5290;--anatomy-shade-0:#0f3560;--anatomy-shade-1:#123b69;--anatomy-shade-2:#154172;--anatomy-shade-3:#18487c;--anatomy-hi:#e3f0ff;--anatomy-mid:#9cc2ec;--anatomy-lo:#5f8fc6;--anatomy-faint:#3c6ea8;--anatomy-dot:#e3f0ff;--anatomy-halo:#04162b;--anatomy-lit-top:#2a64a8;--anatomy-lit-shade:#1d4f8a;'},
+  signaal:{name:'Signaal', base:'light', bg:'#f2b705', bg2:'#dca600', ink:'#16130a', sub:'#3d3415', vars:'--anatomy-halo:#6b5200;--anatomy-halo-opacity:.4;'},
+};
+const ACCENTS = {geel:['#f2b705','#c99600','#ffd34d','Signaalgeel'], groen:['#2f8a63','#226b4c','#56b78a','Machinegroen'], rood:['#d4553e','#a83f2c','#ef8069','Roestrood'], blauw:['#3f72c0','#2d5694','#7aa5e6','Staalblauw'], geen:null};
+const FONTS = {
+  werkplaats:{display:'"Big Shoulders Display"', weight:900, upper:true, track:0.01, lh:0.9},
+  stencil:{display:'"Saira Stencil One"', weight:400, upper:true, track:0.02, lh:1.0},
+  modern:{display:'"Bricolage Grotesque"', weight:800, upper:false, track:-0.02, lh:0.98},
+};
+const BODY_FONT = '"IBM Plex Sans", system-ui, sans-serif';
+const MONO_FONT = '"IBM Plex Mono", ui-monospace, monospace';
+
+/* ---------------- Standaarden ---------------- */
+const DEFAULT_BRAND = {
+  mark:'DHC', name:'Drachtster Hobby Club', logoUrl:'', logoId:'',
+  footer:'Drachtster Hobby Club · Tussendiepen 57, Drachten · drachtsterhobbyclub.nl',
+  qr:'https://drachtsterhobbyclub.nl',
+  facts:`Drachtster Hobby Club (DHC), opgericht in 1957, Tussendiepen 57, Drachten. Werkplaats voor doe-het-zelvers, geen winstoogmerk.
+Metaal: draaibanken, frees, zaagbanken, straalkast, lassen (MIG, MAG, TIG). Hout: draaibank, vandiktebank, lintzaag, cirkelzaag, schuurband. Autowerkplaats met brug en diagnoseapparatuur. Elektronica en kleine reparaties. Buitenwerkplek of stalling te huur (boot, camper).
+Contributie 2026: € 85 per jaar, alle machines inbegrepen; verbruik, stalling en energie apart. Lid vanaf 16 jaar.
+Open: ma, di, do 19.00–21.30; wo 13.00–16.00 en 19.00–21.30; vr 10.00–16.00 en 19.00–21.30; za 09.00–15.00.
+Vergelijking: een verhuurwerkplaats in Drachten rekent € 7,50 per kwartier voor een autobrug, € 7,50 per persoon per dag voor licht gereedschap en € 2,50–3,50 per apparaat per dag.
+Beurs: woensdag 28 oktober 2026, 13.00–17.00, Drachten Maakt 't in De Sluisfabriek (Tussendiepen 6), in dezelfde straat als de club.`,
+};
+let BRAND = {...DEFAULT_BRAND};
+const NEW_DESIGN = () => ({
+  asset:'brug', theme:'papier', accent:'geel', bg:'raster', font:'werkplaats', zoom:1, panX:0, panY:0,
+  eyebrow:'Drachten Maakt \'t · woensdag 28 oktober',
+  headline:'Autobrug huren? *€ 30 per uur.* Bij ons € 85 per jaar.',
+  body:'Alle machines, het hele jaar, ook \'s avonds. Met koffie en leden die je verder helpen.',
+  cta:'Kom kijken in De Sluisfabriek',
+  badgeOn:true, badge:'€ 85', badgeSub:'per jaar, alles inbegrepen',
+  qrOn:true, qr:'', footer:'', motion:true, angle:'rekensom',
+});
+
+/* ---------------- App-status ---------------- */
+let D = NEW_DESIGN();
+let FMT = 'ig-post';
+let editingId = null;
+let ITEMS = [];          // bibliotheek
+let view = 'studio';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const ease = x => x<.5 ? 4*x*x*x : 1-Math.pow(-2*x+2,3)/2;
+try { const s = JSON.parse(localStorage.getItem('dhc-studio-draft')||'null'); if (s && s.D) { D = {...NEW_DESIGN(), ...s.D}; FMT = s.FMT || FMT; editingId = s.editingId || null; } } catch(e) {}
+function saveDraft(){ try { localStorage.setItem('dhc-studio-draft', JSON.stringify({D, FMT, editingId})); } catch(e) {} }
+
+/* ---------------- Illustraties ---------------- */
+const byId = id => ASSETS.find(a=>a.id===id) || ASSETS[0];
+for (const a of ASSETS) a.chunks = a.body.split(/(<g data-part="[a-z]+")/);
+function wave(kind, t){
+  if (kind==='lift'){ const p=(t%7)/7; if(p<.3) return ease(p/.3); if(p<.55) return 1; if(p<.85) return 1-ease((p-.55)/.3); return 0; }
+  if (kind==='feed'){ const p=(t%6)/6; return p<.8 ? ease(p/.8) : 1-ease((p-.8)/.2); }
+  if (kind==='drill'){ const p=(t%4)/4; if(p<.3) return ease(p/.3); if(p<.45) return 1; if(p<.75) return 1-ease((p-.45)/.3); return 0; }
+  if (kind==='file'){ return (1-Math.cos(t*2*Math.PI/1.4))/2; }
+  return 0;
+}
+function assetBody(a, t){
+  let out='';
+  for (const c of a.chunks){
+    const m = c.match(/^<g data-part="([a-z]+)"$/);
+    if (m && t != null){ const an = a.anim.find(x=>x.part===m[1] && x.vec); if (an){ const s=wave(an.wave,t); out += c + ` transform="translate(${(an.vec[0]*s).toFixed(2)} ${(an.vec[1]*s).toFixed(2)})"`; continue; } }
+    out += c;
+  }
+  return out;
+}
+function themeVars(d){
+  const th = THEMES[d.theme] || THEMES.papier, ac = ACCENTS[d.accent];
+  return th.vars + (ac ? `--anatomy-lit-top:${ac[2]};--anatomy-face:${ac[0]};--anatomy-lit-shade:${ac[1]};--acc-glow:${ac[2]};` : '');
+}
+function assetSvg(a, d, t){
+  const th = THEMES[d.theme] || THEMES.papier;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${a.w} ${a.h}" width="${a.w}" height="${a.h}" class="iso iso-svg iso-anim${t==null?'':' iso-frozen'}"${th.base==='light'?' data-theme="light"':''} style="--t:${(t||0).toFixed(3)}s"><style>${ISO_CSS}svg.iso.iso-svg{${themeVars(d)}}</style>${assetBody(a, t)}</svg>`;
+}
+const imgCache = new Map();
+function loadImg(src){ return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('Afbeelding laden mislukt')); i.src = src; }); }
+async function svgImage(svg){ const url = URL.createObjectURL(new Blob([svg], {type:'image/svg+xml'})); try { const img = await loadImg(url); return img; } finally { setTimeout(()=>URL.revokeObjectURL(url), 2000); } }
+async function assetImage(d, t){
+  const a = byId(d.asset);
+  const key = t==null ? `${a.id}|${d.theme}|${d.accent}` : null;
+  if (key && imgCache.has(key)) return imgCache.get(key);
+  const p = svgImage(assetSvg(a, d, t ?? 0));
+  if (key){ imgCache.set(key, p); p.catch(()=>imgCache.delete(key)); }
+  return p;
+}
+let logoImg = null;
+async function refreshLogo(){ logoImg = null; if (BRAND.logoUrl){ try { logoImg = await loadImg(BRAND.logoUrl); } catch(e){ logoImg = null; } } }
+
+/* ---------------- Opmaak ---------------- */
+function lum(hex){ const n=parseInt(hex.slice(1),16); const c=[n>>16&255,n>>8&255,n&255].map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)}); return .2126*c[0]+.7152*c[1]+.0722*c[2]; }
+function contrast(a,b){ const x=lum(a), y=lum(b); return (Math.max(x,y)+.05)/(Math.min(x,y)+.05); }
+function palette(d){
+  const th = THEMES[d.theme] || THEMES.papier, ac = ACCENTS[d.accent];
+  const acc = ac ? ac[0] : (th.base==='light' ? '#18181a' : '#ffffff');
+  const hlOk = ac && contrast(ac[0], th.bg) >= 2.2;
+  return { ...th, acc, hl: hlOk ? ac[0] : th.ink, hlBar: !hlOk && !!ac, accInk: contrast(acc,'#ffffff')>3 ? '#ffffff' : '#16130a' };
+}
+function parseRich(text){
+  const toks = []; let hl=false;
+  for (const part of String(text||'').split('*')){ for (const w of part.split(/\s+/).filter(Boolean)) toks.push({w, hl}); hl=!hl; }
+  return toks;
+}
+function wrapRich(ctx, toks, maxW){
+  const lines=[]; let line=[], wsum=0; const sp = ctx.measureText(' ').width;
+  for (const t of toks){ const w = ctx.measureText(t.w).width; if (line.length && wsum + sp + w > maxW){ lines.push(line); line=[]; wsum=0; } line.push({...t, width:w}); wsum += (line.length>1?sp:0) + w; }
+  if (line.length) lines.push(line);
+  return lines;
+}
+function fitText(ctx, text, box, {family, weight=400, upper=false, lh=1.15, max=200, min=6, track=0}){
+  const s = upper ? String(text||'').toUpperCase() : String(text||'');
+  const toks = parseRich(s);
+  let lo=min, hi=Math.max(min, Math.min(max, box.h)), best=null;
+  for (let i=0;i<14;i++){
+    const size=(lo+hi)/2; ctx.font = `${weight} ${size}px ${family}`;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = `${(track*size).toFixed(2)}px`;
+    const lines = wrapRich(ctx, toks, box.w);
+    const tooWide = lines.some(l => l.reduce((s,t)=>s+t.width,0) + (l.length-1)*ctx.measureText(' ').width > box.w + 0.5);
+    const h = lines.length * size * lh;
+    if (h <= box.h && !tooWide){ best={size, lines}; lo=size; } else hi=size;
+  }
+  if (!best){ const size=min; ctx.font=`${weight} ${size}px ${family}`; best={size, lines: wrapRich(ctx, toks, box.w)}; }
+  return {...best, family, weight, lh, track};
+}
+function drawFitted(ctx, F, box, color, hl, {align='left', valign='top', hlBar=false, barColor=null, alpha=1, dy=0}={}){
+  if (!F || !F.lines.length) return 0;
+  ctx.save(); ctx.globalAlpha *= alpha;
+  ctx.font = `${F.weight} ${F.size}px ${F.family}`; if ('letterSpacing' in ctx) ctx.letterSpacing = `${(F.track*F.size).toFixed(2)}px`;
+  ctx.textBaseline = 'alphabetic';
+  const lineH = F.size*F.lh, total = F.lines.length*lineH;
+  let y = box.y + (valign==='middle' ? (box.h-total)/2 : valign==='bottom' ? box.h-total : 0) + dy;
+  const sp = ctx.measureText(' ').width;
+  for (const line of F.lines){
+    const lw = line.reduce((s,t)=>s+t.width,0) + (line.length-1)*sp;
+    let x = box.x + (align==='center' ? (box.w-lw)/2 : align==='right' ? box.w-lw : 0);
+    const base = y + F.size*0.86 + (lineH - F.size)/2;
+    for (const t of line){
+      if (t.hl && hlBar){ ctx.fillStyle = barColor; ctx.fillRect(x-F.size*0.04, base-F.size*0.78, t.width+sp*0.6, F.size*0.84); }
+      ctx.fillStyle = t.hl ? hl : color; ctx.fillText(t.w, x, base); x += t.width + sp;
+    }
+    y += lineH;
+  }
+  ctx.restore();
+  return total;
+}
+function roundRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+function layout(f, d){
+  const [W,H] = f.px, A = W/H;
+  const inset = f.bleedPx + f.safePx;
+  const u = Math.min(W - inset*2, H - inset*2);
+  const pad = Math.max(6, Math.round(u*0.06)) + inset;
+  let top = pad, bottom = H - pad;
+  if (f.story){ top = Math.max(pad, H*0.12); bottom = Math.min(bottom, H*0.80); }
+  const L = { kind:'', W, H, pad, u };
+  const cw = W - pad*2;
+  const tiny = (W*H < 260000) && (W <= 360 || H <= 130);
+  const hasQr = d.qrOn && f.qr;
+  if (tiny){
+    if (A > 3){ L.kind='leader';
+      const h = bottom-top, logoW = h*1.2;
+      L.logo = {x:pad, y:top, w:logoW, h};
+      L.cta = {x:W-pad-Math.min(W*0.22, h*3.4), y:top+h*0.18, w:Math.min(W*0.22,h*3.4), h:h*0.64};
+      L.art = {x:L.cta.x - W*0.25 - pad*0.5, y:0, w:W*0.25, h:H, clip:true};
+      L.headline = {x:pad+logoW+pad*0.8, y:top, w:L.art.x - (pad+logoW+pad*1.6), h};
+    } else if (A < 0.5){ L.kind='sky';
+      L.logo = {x:pad, y:top, w:cw, h:H*0.06};
+      L.headline = {x:pad, y:top+H*0.09, w:cw, h:H*0.3};
+      L.art = {x:0, y:H*0.42, w:W, h:H*0.36};
+      L.cta = {x:pad, y:bottom-H*0.1, w:cw, h:H*0.1};
+    } else { L.kind='mrec';
+      L.logo = {x:pad, y:top, w:cw*0.4, h:H*0.08};
+      L.headline = {x:pad, y:top+H*0.11, w:cw, h:H*(A>1?0.27:0.22)};
+      L.art = {x:0, y:H*(A>1?0.40:0.36), w:W, h:H*(A>1?0.42:0.45)};
+      L.cta = {x:pad, y:bottom-H*(A>1?0.13:0.09), w:cw, h:H*(A>1?0.13:0.09)};
+    }
+    return L;
+  }
+  if (A > 2.3){ L.kind='wide';
+    const h = bottom-top;
+    L.logo = {x:pad, y:top, w:cw*0.18, h:h*0.12};
+    L.eyebrow = {x:pad, y:top+h*0.18, w:cw*0.4, h:h*0.08};
+    L.headline = {x:pad, y:top+h*0.29, w:cw*0.4, h:h*0.46};
+    L.cta = {x:pad, y:top+h*0.82, w:Math.min(cw*0.26, h*1.5), h:h*0.15};
+    L.art = {x:pad+cw*0.42, y:0, w:cw*(hasQr?0.38:0.58), h:H};
+    if (d.badgeOn) L.badge = {cx:pad+cw*(hasQr?0.88:0.92), cy:top+h*0.28, r:h*0.2};
+    if (hasQr) L.qr = {x:W-pad-h*0.34, y:bottom-h*0.42, s:h*0.34};
+    L.footer = {x:pad+cw*0.42, y:bottom-h*0.05, w:cw*0.4, h:h*0.05};
+    return L;
+  }
+  if (A > 1.25){ L.kind='land';
+    const h = bottom-top, colW = cw*0.46;
+    L.logo = {x:pad, y:top, w:colW*0.5, h:h*0.08};
+    L.eyebrow = {x:pad, y:top+h*0.15, w:colW, h:h*0.05};
+    L.headline = {x:pad, y:top+h*0.22, w:colW, h:h*0.36};
+    L.body = {x:pad, y:top+h*0.61, w:colW, h:h*0.14};
+    L.cta = {x:pad, y:top+h*0.80, w:Math.min(colW*0.75, h*0.9), h:h*0.1};
+    L.art = {x:pad+colW, y:0, w:W-pad-colW, h:H};
+    if (d.badgeOn) L.badge = {cx:W-pad-h*0.17, cy:top+h*0.17, r:h*0.15};
+    if (hasQr) L.qr = {x:W-pad-h*0.22, y:bottom-h*0.3, s:h*0.22};
+    L.footer = {x:pad, y:bottom-h*0.035, w:cw*0.7, h:h*0.035};
+    return L;
+  }
+  if (A > 0.85){ L.kind='square';
+    const h = bottom-top;
+    L.logo = {x:W-pad-cw*0.22, y:top, w:cw*0.22, h:h*0.07};
+    L.eyebrow = {x:pad, y:top, w:cw*0.7, h:h*0.04};
+    L.headline = {x:pad, y:top+h*0.07, w:cw*0.92, h:h*0.27};
+    L.art = {x:pad*0.5, y:top+h*0.3, w:W-pad, h:h*0.55};
+    L.body = {x:pad, y:top+h*0.86, w:cw*(hasQr?0.62:0.6), h:h*0.1};
+    L.cta = hasQr ? null : {x:W-pad-cw*0.36, y:top+h*0.865, w:cw*0.36, h:h*0.09};
+    if (hasQr) L.qr = {x:W-pad-h*0.15, y:bottom-h*0.15, s:h*0.15};
+    if (d.badgeOn) L.badge = {cx:pad+h*0.13, cy:top+h*0.5, r:h*0.12};
+    L.footer = null;
+    return L;
+  }
+  if (A > 0.6){ L.kind='portrait';
+    const h = bottom-top;
+    L.logo = {x:pad, y:top, w:cw*0.3, h:h*0.05};
+    L.eyebrow = {x:pad, y:top+h*0.075, w:cw, h:h*0.03};
+    L.headline = {x:pad, y:top+h*0.115, w:cw, h:h*0.23};
+    L.art = {x:0, y:top+h*0.33, w:W, h:h*0.44};
+    L.body = {x:pad, y:top+h*0.78, w:cw*(hasQr?0.7:1), h:h*0.08};
+    L.cta = {x:pad, y:top+h*0.88, w:Math.min(cw*0.62, cw), h:h*0.065};
+    if (hasQr) L.qr = {x:W-pad-h*0.15, y:top+h*0.79, s:h*0.15};
+    if (d.badgeOn) L.badge = {cx:W-pad-h*0.1, cy:top+h*0.47, r:h*0.095};
+    L.footer = {x:pad, y:bottom-h*0.025, w:cw, h:h*0.025};
+    return L;
+  }
+  L.kind='tall';
+  const h = bottom-top;
+  L.logo = {x:pad, y:top, w:cw*0.4, h:h*0.045};
+  L.eyebrow = {x:pad, y:top+h*0.07, w:cw, h:h*0.025};
+  L.headline = {x:pad, y:top+h*0.1, w:cw, h:h*0.24};
+  L.art = {x:0, y:top+h*0.34, w:W, h:h*0.36};
+  L.body = {x:pad, y:top+h*0.71, w:cw, h:h*0.08};
+  L.cta = {x:pad, y:top+h*0.81, w:cw*(hasQr?0.62:1), h:h*0.06};
+  if (hasQr) L.qr = {x:W-pad-h*0.11, y:top+h*0.8, s:h*0.11};
+  if (d.badgeOn) L.badge = {cx:W-pad-h*0.075, cy:top+h*0.43, r:h*0.07};
+  L.footer = {x:pad, y:bottom-h*0.02, w:cw, h:h*0.02};
+  return L;
+}
+
+function drawBackground(ctx, W, H, P, d, u){
+  ctx.fillStyle = P.bg; ctx.fillRect(0,0,W,H);
+  if (d.bg==='raster'){ const g = Math.max(8, u*0.035), r = Math.max(0.8, g*0.07); ctx.fillStyle = P.bg2; for (let y=g/2;y<H;y+=g) for (let x=g/2;x<W;x+=g){ ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); } }
+  if (d.bg==='lijnen'){ const g = Math.max(10, u*0.05); ctx.strokeStyle = P.bg2; ctx.lineWidth = Math.max(0.5, u*0.0012); ctx.beginPath(); for (let x=0;x<W;x+=g){ ctx.moveTo(x+.5,0); ctx.lineTo(x+.5,H); } for (let y=0;y<H;y+=g){ ctx.moveTo(0,y+.5); ctx.lineTo(W,y+.5); } ctx.stroke(); ctx.globalAlpha=.5; ctx.lineWidth*=2.2; ctx.beginPath(); for (let x=0;x<W;x+=g*5){ ctx.moveTo(x+.5,0); ctx.lineTo(x+.5,H); } for (let y=0;y<H;y+=g*5){ ctx.moveTo(0,y+.5); ctx.lineTo(W,y+.5); } ctx.stroke(); ctx.globalAlpha=1; }
+  if (d.bg==='spot'){ const gr = ctx.createRadialGradient(W*0.6,H*0.55,0,W*0.6,H*0.55,Math.max(W,H)*0.7); gr.addColorStop(0, P.bg2); gr.addColorStop(1, P.bg); ctx.fillStyle = gr; ctx.fillRect(0,0,W,H); }
+}
+function drawArt(ctx, img, a, box, d, f){
+  const s0 = Math.min(box.w / a.w, box.h / a.h) * (d.zoom||1);
+  const w = a.w*s0, h = a.h*s0;
+  const x = box.x + (box.w-w)/2 + (d.panX||0)*box.w, y = box.y + (box.h-h)/2 + (d.panY||0)*box.h;
+  ctx.save();
+  if (box.clip){ ctx.beginPath(); ctx.rect(box.x, box.y, box.w, box.h); ctx.clip(); }
+  ctx.drawImage(img, x, y, w, h);
+  ctx.restore();
+}
+const LOGO_D = 'M0 0H100A420.5 420.5 0 0 1 482 244.73V596.27A420.5 420.5 0 0 1 100 841H0Z M0 199H126A203 203 0 0 1 126 605H0Z M482 0h39V841h-39Z M675 0h152v320H675ZM675 521h152v320H675Z M1502 0H1402A420.5 420.5 0 0 0 1020 244.73V596.27A420.5 420.5 0 0 0 1402 841H1502Z M1502 199H1376A203 203 0 0 0 1376 605H1502Z M981 0h39V841h-39Z';
+const LOGO_PATH = new Path2D(LOGO_D);
+const LOGO_SVG = `<svg viewBox="0 0 1502 841" role="img" aria-label="DHC"><path fill="currentColor" fill-rule="evenodd" d="${LOGO_D}"/></svg>`;
+function drawLogo(ctx, box, P, F, align='left'){
+  if (!box) return;
+  if (logoImg){ const s = Math.min(box.w/logoImg.naturalWidth, box.h/logoImg.naturalHeight); const w = logoImg.naturalWidth*s, h = logoImg.naturalHeight*s; ctx.drawImage(logoImg, align==='right'? box.x+box.w-w : box.x, box.y+(box.h-h)/2, w, h); return; }
+  // standaard: het DHC-logo als vector in de inktkleur van het thema, met de clubnaam ernaast
+  const h = box.h; ctx.save(); if ('letterSpacing' in ctx) ctx.letterSpacing='0px';
+  const mw = h*1502/841 + h*0.05;
+  ctx.font = `600 ${h*0.3}px ${BODY_FONT}`;
+  const nameLines = splitName(BRAND.name||''); const nw = Math.max(...nameLines.map(l=>ctx.measureText(l).width), 0);
+  const total = mw + (nw ? h*0.3 + nw : 0);
+  const sc = total > box.w ? box.w/total : 1;
+  let x = align==='right' ? box.x+box.w-total*sc : box.x;
+  ctx.translate(x, box.y + (box.h - h*sc)/2); ctx.scale(sc, sc);
+  ctx.save(); ctx.scale(h/841, h/841); ctx.fillStyle = P.ink; ctx.fill(LOGO_PATH, 'evenodd'); ctx.restore();
+  ctx.textBaseline='alphabetic';
+  if (nw){ ctx.fillStyle = P.ink; ctx.font = `600 ${h*0.3}px ${BODY_FONT}`; nameLines.forEach((l,i)=>ctx.fillText(l, mw + h*0.3, h*0.42 + i*h*0.36)); }
+  ctx.restore();
+}
+function splitName(n){ const w = n.split(' '); if (w.length<3) return [n]; const m = Math.ceil(w.length/2); return [w.slice(0,m).join(' '), w.slice(m).join(' ')]; }
+function drawQr(ctx, box, P, url){
+  if (!box || typeof qrcode==='undefined') return;
+  const qr = qrcode(0, 'M'); qr.addData(url || BRAND.qr || 'https://drachtsterhobbyclub.nl'); qr.make();
+  const n = qr.getModuleCount(), quiet = 2, cell = box.s/(n+quiet*2);
+  ctx.fillStyle = '#ffffff'; roundRect(ctx, box.x, box.y, box.s, box.s, cell*1.5); ctx.fill();
+  ctx.fillStyle = '#111111';
+  for (let r=0;r<n;r++) for (let c=0;c<n;c++) if (qr.isDark(r,c)) ctx.fillRect(box.x+(c+quiet)*cell, box.y+(r+quiet)*cell, Math.ceil(cell), Math.ceil(cell));
+}
+function drawBadge(ctx, b, P, F, d, k=1){
+  if (!b || k<=0) return;
+  ctx.save(); ctx.translate(b.cx, b.cy); ctx.rotate(-0.07); ctx.scale(k,k);
+  const r = b.r;
+  ctx.fillStyle = P.acc; ctx.beginPath();
+  const teeth = 18; for (let i=0;i<teeth*2;i++){ const a = i*Math.PI/teeth, rr = i%2 ? r : r*0.93; ctx.lineTo(Math.cos(a)*rr, Math.sin(a)*rr); } ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = P.accInk; ctx.globalAlpha=.35; ctx.lineWidth = r*0.02; ctx.beginPath(); ctx.arc(0,0,r*0.82,0,Math.PI*2); ctx.stroke(); ctx.globalAlpha=1;
+  const big = fitText(ctx, d.badge, {w:r*1.45, h:r*0.62}, {family:F.display, weight:F.weight, upper:F.upper, lh:1, max:r*0.9});
+  drawFitted(ctx, big, {x:-r*0.725, y:-r*0.62, w:r*1.45, h:r*0.62}, P.accInk, P.accInk, {align:'center', valign:'bottom'});
+  const sub = fitText(ctx, d.badgeSub, {w:r*1.25, h:r*0.42}, {family:BODY_FONT, weight:600, lh:1.1, max:r*0.2});
+  drawFitted(ctx, sub, {x:-r*0.625, y:r*0.06, w:r*1.25, h:r*0.42}, P.accInk, P.accInk, {align:'center'});
+  ctx.restore();
+}
+function drawCta(ctx, box, P, text, alpha=1){
+  if (!box || !text) return;
+  ctx.save(); ctx.globalAlpha = alpha;
+  ctx.fillStyle = P.ink; roundRect(ctx, box.x, box.y, box.w, box.h, box.h*0.12); ctx.fill();
+  const F = fitText(ctx, text, {w:box.w*0.84, h:box.h*0.5}, {family:BODY_FONT, weight:700, lh:1.1, max:box.h*0.42});
+  drawFitted(ctx, F, {x:box.x+box.w*0.08, y:box.y+box.h*0.25, w:box.w*0.84, h:box.h*0.5}, P.bg, P.bg, {align:'center', valign:'middle'});
+  ctx.restore();
+}
+function introAt(t, start, dur=0.7){ if (t==null) return 1; return ease(clamp((t-start)/dur, 0, 1)); }
+
+async function render(ctx, f, d, {t=null, scale=1, guides=false, img=null}={}){
+  const [W,H] = f.px; const P = palette(d); const F = FONTS[d.font] || FONTS.werkplaats; const a = byId(d.asset);
+  const L = layout(f, d);
+  ctx.save(); ctx.setTransform(scale,0,0,scale,0,0);
+  drawBackground(ctx, W, H, P, d, L.u);
+  const art = img || await assetImage(d, t);
+  const motion = d.motion && t != null;
+  const mt = motion ? t : null;
+  if (L.art){
+    const drift = motion ? 1 + 0.03*ease(clamp(t/8,0,1)) : 1;
+    ctx.save();
+    if (drift !== 1){ const cx = L.art.x+L.art.w/2, cy = L.art.y+L.art.h/2; ctx.translate(cx,cy); ctx.scale(drift,drift); ctx.translate(-cx,-cy); }
+    drawArt(ctx, art, a, L.art, d, f); ctx.restore();
+  }
+  drawLogo(ctx, L.logo, P, F, L.kind==='square' ? 'right' : 'left');
+  if (L.eyebrow && d.eyebrow){
+    const E = fitText(ctx, d.eyebrow, L.eyebrow, {family:MONO_FONT, weight:600, upper:true, lh:1.1, max:L.eyebrow.h*0.9, track:0.06});
+    drawFitted(ctx, E, L.eyebrow, P.sub, P.sub, {alpha:introAt(mt,0.1), dy:(1-introAt(mt,0.1))*L.u*0.02});
+  }
+  if (L.headline && d.headline){
+    const HF = fitText(ctx, d.headline, L.headline, {family:F.display, weight:F.weight, upper:F.upper, lh:F.lh, max:L.headline.h, track:F.track});
+    drawFitted(ctx, HF, L.headline, P.ink, P.hl, {hlBar:P.hlBar, barColor:P.acc, alpha:introAt(mt,0.25), dy:(1-introAt(mt,0.25))*L.u*0.04, valign: L.kind==='leader' ? 'middle' : 'top'});
+  }
+  if (L.body && d.body){
+    const B = fitText(ctx, d.body, L.body, {family:BODY_FONT, weight:400, lh:1.3, max:Math.max(10, L.u*0.034)});
+    drawFitted(ctx, B, L.body, P.ink, P.ink, {alpha:introAt(mt,0.8)});
+  }
+  drawCta(ctx, L.cta, P, d.cta, introAt(mt,1.3));
+  if (L.badge) drawBadge(ctx, L.badge, P, F, d, motion ? (t<1 ? 0 : Math.min(1, 1 + 0.15*Math.sin(Math.min(1,(t-1)/0.45)*Math.PI) * (1-(t-1)/0.45 > 0 ? 1 : 0)) * ease(clamp((t-1)/0.35,0,1))) : 1);
+  if (L.qr) drawQr(ctx, L.qr, P, d.qr || BRAND.qr);
+  const footer = d.footer || BRAND.footer;
+  if (L.footer && footer){ const FF = fitText(ctx, footer, L.footer, {family:BODY_FONT, weight:500, lh:1.1, max:L.footer.h}); drawFitted(ctx, FF, L.footer, P.sub, P.sub, {}); }
+  if (guides){
+    ctx.save(); ctx.lineWidth = Math.max(1, 1.5/scale); ctx.setLineDash([8/scale, 6/scale]);
+    if (f.bleedPx){ ctx.strokeStyle = '#e5484d'; ctx.strokeRect(f.bleedPx, f.bleedPx, W-2*f.bleedPx, H-2*f.bleedPx); ctx.strokeStyle = '#3e63dd'; const s = f.bleedPx+f.safePx; ctx.strokeRect(s, s, W-2*s, H-2*s); }
+    if (f.story){ ctx.fillStyle='rgba(229,72,77,.12)'; ctx.fillRect(0,0,W,H*0.12); ctx.fillRect(0,H*0.8,W,H*0.2); }
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+/* ---------------- Voorbeeld ---------------- */
+const cv = $('#cv'), cx = cv.getContext('2d');
+let playing = false, playStart = 0, rafId = 0, drawing = false, pendingDraw = false;
+function previewScale(f){ const st = $('#stage'); const maxW = Math.max(200, st.clientWidth - 48), maxH = Math.max(200, st.clientHeight - 48); const [W,H] = f.px; const fit = Math.min(maxW/W, maxH/H, 1); return {fit, dpr: Math.min(2, window.devicePixelRatio||1)}; }
+async function draw(t=null){
+  if (drawing){ pendingDraw = true; return; }
+  drawing = true;
+  try {
+    const f = fmtById(FMT); const {fit, dpr} = previewScale(f); const s = fit*dpr;
+    const [W,H] = f.px; const pw = Math.max(1, Math.round(W*s)), ph = Math.max(1, Math.round(H*s));
+    const off = document.createElement('canvas'); off.width = pw; off.height = ph;
+    await render(off.getContext('2d'), f, D, {t, scale:s, guides:$('#guides').checked});
+    if (cv.width !== pw || cv.height !== ph){ cv.width = pw; cv.height = ph; }
+    cv.style.width = Math.round(W*fit)+'px'; cv.style.height = Math.round(H*fit)+'px';
+    cx.drawImage(off, 0, 0);
+    $('#fmtInfo').textContent = `${f.name} · ${f.px[0]} × ${f.px[1]} px` + (f.mm ? ` · ${f.mm[0]} × ${f.mm[1]} mm + 3 mm afloop · ${f.dpi} dpi` : f.scale ? ` · export ${f.scale}×` : '');
+  } catch(e){ console.error(e); }
+  drawing = false;
+  if (pendingDraw && !playing){ pendingDraw = false; draw(); }
+}
+function loop(now){
+  if (!playing) return;
+  const t = (now - playStart)/1000;
+  if (!drawing) draw(t);
+  rafId = requestAnimationFrame(loop);
+}
+function setPlaying(on){
+  playing = on && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $('#play').textContent = playing ? 'Pauzeren' : 'Afspelen';
+  cancelAnimationFrame(rafId);
+  if (playing){ playStart = performance.now(); rafId = requestAnimationFrame(loop); } else draw();
+}
+let drawTimer = 0;
+function redraw(){ saveDraft(); if (playing) return; clearTimeout(drawTimer); drawTimer = setTimeout(()=>draw(), 30); }
+
+/* ---------------- Studio-bediening ---------------- */
+const TEXT_FIELDS = ['eyebrow','headline','body','cta','badge','badgeSub','qr','footer'];
+function syncForm(){
+  $('#assetName').textContent = byId(D.asset).name;
+  document.querySelectorAll('#assets .asset').forEach(b=>b.classList.toggle('on', b.dataset.id===D.asset));
+  document.querySelectorAll('#themes .sw').forEach(b=>b.classList.toggle('on', b.dataset.v===D.theme));
+  document.querySelectorAll('#accents .sw').forEach(b=>b.classList.toggle('on', b.dataset.v===D.accent));
+  $('#bgStyle').value = D.bg; $('#fontPair').value = D.font; $('#angle').value = D.angle || 'rekensom';
+  $('#zoom').value = D.zoom; $('#zoomV').textContent = Math.round(D.zoom*100)+'%'; $('#panX').value = D.panX; $('#panY').value = D.panY;
+  for (const k of TEXT_FIELDS) { const el = $('#t-'+k); if (document.activeElement !== el) el.value = D[k] || ''; }
+  $('#t-qr').placeholder = BRAND.qr; $('#t-footer').placeholder = BRAND.footer;
+  $('#t-badgeOn').checked = !!D.badgeOn; $('#t-qrOn').checked = !!D.qrOn; $('#t-motion').checked = !!D.motion;
+  const f = fmtById(FMT);
+  document.querySelectorAll('#groups button').forEach(b=>b.classList.toggle('on', b.dataset.g===f.g));
+  const sel = $('#format'); sel.innerHTML = FORMATS.filter(x=>x.g===f.g).map(x=>`<option value="${x.id}"${x.id===FMT?' selected':''}>${esc(x.name)}</option>`).join('');
+  $('#exPdf').disabled = !f.mm; $('#exMp4').disabled = !f.video; $('#dur').disabled = !f.video;
+  $('#editing').textContent = editingId ? 'bewerkt een opgeslagen ontwerp' : 'nieuw ontwerp';
+}
+function buildStudio(){
+  $('#groups').innerHTML = Object.entries(GROUPS).map(([g,n])=>`<button type="button" data-g="${g}">${n}</button>`).join('');
+  $('#themes').innerHTML = Object.entries(THEMES).map(([k,t])=>`<button type="button" class="sw" data-v="${k}" title="${t.name}" aria-label="Thema ${t.name}" style="background:linear-gradient(135deg,${t.bg} 55%,${t.ink} 55%)"></button>`).join('');
+  $('#accents').innerHTML = Object.entries(ACCENTS).map(([k,a])=> a ? `<button type="button" class="sw" data-v="${k}" title="${a[3]}" aria-label="Accent ${a[3]}" style="background:${a[0]}"></button>` : `<button type="button" class="sw wide" data-v="geen">Geen</button>`).join('');
+  // asset thumbnails (static)
+  $('#assets').innerHTML = ASSETS.map(a=>`<button type="button" class="asset" data-id="${a.id}" title="${esc(a.desc)}"><img alt="${esc(a.name)}"><span>${esc(a.name)}</span></button>`).join('');
+  ASSETS.forEach(async a => { const url = URL.createObjectURL(new Blob([assetSvg(a, {theme:'papier', accent:'geel'}, null)], {type:'image/svg+xml'})); document.querySelector(`#assets [data-id="${a.id}"] img`).src = url; });
+  $('#pack').innerHTML = Object.entries(GROUPS).map(([g,n]) => `<div class="g">${n}</div>` + FORMATS.filter(f=>f.g===g).map(f=>`<label><input type="checkbox" value="${f.id}"${['ig-post','story','fb-link','a5','screen'].includes(f.id)?' checked':''}> ${esc(f.name)}</label>`).join('')).join('');
+}
+function on(sel, ev, fn){ $(sel).addEventListener(ev, fn); }
+function setD(patch){ Object.assign(D, patch); syncForm(); redraw(); }
+on('#assets','click', e=>{ const b=e.target.closest('.asset'); if (b) setD({asset:b.dataset.id}); });
+on('#themes','click', e=>{ const b=e.target.closest('.sw'); if (b) setD({theme:b.dataset.v}); });
+on('#accents','click', e=>{ const b=e.target.closest('.sw'); if (b) setD({accent:b.dataset.v}); });
+on('#bgStyle','change', e=>setD({bg:e.target.value}));
+on('#fontPair','change', e=>setD({font:e.target.value}));
+on('#angle','change', e=>{ D.angle = e.target.value; saveDraft(); });
+for (const k of ['zoom','panX','panY']) on('#'+k, 'input', e=>{ D[k] = +e.target.value; if (k==='zoom') $('#zoomV').textContent = Math.round(D.zoom*100)+'%'; redraw(); });
+for (const k of TEXT_FIELDS) on('#t-'+k, 'input', e=>{ D[k] = e.target.value; redraw(); });
+on('#t-badgeOn','change', e=>setD({badgeOn:e.target.checked}));
+on('#t-qrOn','change', e=>setD({qrOn:e.target.checked}));
+on('#t-motion','change', e=>setD({motion:e.target.checked}));
+on('#groups','click', e=>{ const b=e.target.closest('button'); if (!b) return; FMT = FORMATS.find(f=>f.g===b.dataset.g).id; syncForm(); redraw(); });
+on('#format','change', e=>{ FMT = e.target.value; syncForm(); redraw(); });
+on('#guides','change', ()=>redraw());
+on('#play','click', ()=>setPlaying(!playing));
+new ResizeObserver(()=>{ if (!playing) redraw(); }).observe($('#stage'));
+
+/* ---------------- Capabilities ---------------- */
+let db=null, assetsCap=null, downloads=null, sample=null;
+let contentCol=null, brandRef=null;
+function setSync(t){ $('#syncState').textContent = t; }
+async function capability(name){ try { return window.claude?.use ? await window.claude.use(name) : null; } catch(e){ return null; } }
+
+/* ---------------- Export ---------------- */
+function showMsg(text, kind=''){ const m = $('#exMsg'); m.hidden = !text; m.textContent = text || ''; m.className = 'msg ' + kind; }
+function busy(text, p){ const b=$('#busy'); if (text==null){ b.hidden=true; return; } b.hidden=false; $('#busyT').textContent=text; $('#busyP').style.width = Math.round((p||0)*100)+'%'; }
+function slug(s){ return String(s||'dhc').toLowerCase().normalize('NFKD').replace(/[^\w]+/g,'-').replace(/^-|-$/g,'').slice(0,40) || 'dhc'; }
+function fileBase(f, d=D){ return `dhc-${slug(d.title || byId(d.asset).name)}-${f.id}`; }
+async function renderBlob(f, d, type='image/png', q){
+  const sc = f.scale || 1; const [W,H] = f.px;
+  const c = document.createElement('canvas'); c.width = Math.round(W*sc); c.height = Math.round(H*sc);
+  await render(c.getContext('2d'), f, d, {scale:sc});
+  return await new Promise(res => c.toBlob(res, type, q));
+}
+async function save(filename, data){
+  if (!downloads){ showMsg('Downloaden werkt niet in deze weergave. Open de studio via claude.ai om bestanden op te slaan.', 'err'); return false; }
+  try { await downloads.save({filename, data}); return true; }
+  catch(e){ if (e?.code==='declined') showMsg('Opslaan geannuleerd.'); else showMsg('Opslaan lukte niet: ' + (e?.message||e?.code||'onbekende fout'), 'err'); return false; }
+}
+on('#exPng','click', async ()=>{ const f=fmtById(FMT); showMsg(''); busy('PNG maken…', .3); try { const b = await renderBlob(f, D); busy(null); if (await save(fileBase(f)+'.png', b)) showMsg('PNG opgeslagen.', 'ok'); } catch(e){ busy(null); showMsg('PNG maken mislukt: '+e.message, 'err'); } });
+on('#exPdf','click', async ()=>{
+  const f=fmtById(FMT); if (!f.mm) return; showMsg('');
+  if (!window.jspdf){ showMsg('De PDF-module is niet geladen. Probeer het opnieuw.', 'err'); return; }
+  busy('Drukklare PDF maken…', .3);
+  try {
+    const blob = await renderBlob(f, D, 'image/jpeg', 0.93);
+    const buf = new Uint8Array(await blob.arrayBuffer());
+    const w = f.mm[0]+6, h = f.mm[1]+6;
+    const pdf = new window.jspdf.jsPDF({unit:'mm', format:[w,h], orientation: w>h ? 'l' : 'p', compress:true});
+    pdf.addImage(buf, 'JPEG', 0, 0, w, h);
+    pdf.setProperties({title: `${byId(D.asset).name} – ${f.name}`, subject:'Drachtster Hobby Club', creator:'DHC Contentstudio'});
+    const out = pdf.output('blob'); busy(null);
+    if (await save(fileBase(f)+'.pdf', out)) showMsg(`PDF opgeslagen: ${f.mm[0]} × ${f.mm[1]} mm met 3 mm afloop rondom, ${f.dpi} dpi. Controleer de aanleverspecificaties van de drukker.`, 'ok');
+  } catch(e){ busy(null); showMsg('PDF maken mislukt: '+e.message, 'err'); }
+});
+on('#exSvg','click', async ()=>{ showMsg(''); const a=byId(D.asset); if (await save(`dhc-illustratie-${a.id}.svg`, new Blob([assetSvg(a, D, null)], {type:'image/svg+xml'}))) showMsg('SVG opgeslagen. De animatie speelt af in browsers.', 'ok'); });
+on('#exMp4','click', async ()=>{
+  const f=fmtById(FMT); if (!f.video) return; showMsg('');
+  if (typeof VideoEncoder==='undefined' || typeof Mp4Muxer==='undefined'){ showMsg('Video maken werkt in Chrome en Edge. Deze browser ondersteunt het niet.', 'err'); return; }
+  const fps = 30, secs = +$('#dur').value, total = fps*secs;
+  let [W,H] = f.px; const lim = 1920; const k = Math.min(1, lim/Math.max(W,H)); W = Math.round(W*k/2)*2; H = Math.round(H*k/2)*2;
+  const codecs = [['avc1.640028','avc'],['avc1.4d0028','avc'],['avc1.42e028','avc'],['vp09.00.40.08','vp9']];
+  let config = null, mux = 'avc';
+  for (const [codec, m] of codecs){ const c = {codec, width:W, height:H, bitrate: 8_000_000, framerate:fps}; try { if ((await VideoEncoder.isConfigSupported(c)).supported){ config = c; mux = m; break; } } catch(e){} }
+  if (!config){ showMsg('Deze browser kan geen video maken op dit formaat.', 'err'); return; }
+  const was = playing; setPlaying(false);
+  const muxer = new Mp4Muxer.Muxer({target: new Mp4Muxer.ArrayBufferTarget(), video:{codec:mux, width:W, height:H}, fastStart:'in-memory'});
+  let err = null;
+  const enc = new VideoEncoder({output:(chunk, meta)=>muxer.addVideoChunk(chunk, meta), error:e=>{ err = e; }});
+  enc.configure(config);
+  const c = document.createElement('canvas'); c.width = W; c.height = H; const ctx = c.getContext('2d');
+  try {
+    for (let i=0;i<total;i++){
+      if (err) throw err;
+      const t = i/fps;
+      await render(ctx, f, D, {t, scale: W/f.px[0]});
+      const frame = new VideoFrame(c, {timestamp: Math.round(i*1e6/fps), duration: Math.round(1e6/fps)});
+      enc.encode(frame, {keyFrame: i % (fps*2) === 0}); frame.close();
+      if (enc.encodeQueueSize > 8) await new Promise(r=>setTimeout(r, 5));
+      if (i % 5 === 0) busy(`Video maken: ${i+1} van ${total} beelden`, i/total);
+    }
+    await enc.flush(); muxer.finalize();
+    busy(null);
+    const blob = new Blob([muxer.target.buffer], {type:'video/mp4'});
+    if (await save(fileBase(f)+`-${secs}s.mp4`, blob)) showMsg(`Video opgeslagen: ${W} × ${H} px, ${secs} seconden, zonder geluid${mux==='vp9'?' (VP9, speelt af in browsers maar niet overal in apps)':''}.`, 'ok');
+  } catch(e){ busy(null); showMsg('Video maken mislukt: '+(e.message||e), 'err'); }
+  try { enc.close(); } catch(e){}
+  if (was) setPlaying(true);
+});
+function packFormats(){ return [...document.querySelectorAll('#pack input:checked')].map(i=>fmtById(i.value)); }
+on('#packAll','click', ()=>document.querySelectorAll('#pack input').forEach(i=>i.checked=true));
+on('#packNone','click', ()=>document.querySelectorAll('#pack input').forEach(i=>i.checked=false));
+async function packTexts(fmts){
+  if (!$('#packAi').checked || !sample) return {};
+  busy('AI past teksten aan per kanaal…', .1);
+  try {
+    const res = await sample.json(aiPrompt(`Pas de huidige teksten aan voor elk van deze formaten. Houd kop en tekst kort genoeg voor het formaat: kleine banners krijgen een kop van hooguit 5 woorden en geen bodytekst; drukwerk mag iets meer tekst. Behoud de toon.
+Huidige teksten: ${JSON.stringify({eyebrow:D.eyebrow, headline:D.headline, body:D.body, cta:D.cta})}
+Formaten: ${JSON.stringify(fmts.map(f=>({id:f.id, naam:f.name, px:f.px})))}
+Antwoord als JSON-object: { "<formaat-id>": {"eyebrow":"","headline":"","body":"","cta":""}, ... }`), {modelTier:'default'});
+    return res && typeof res==='object' ? res : {};
+  } catch(e){ showMsg('AI kon de teksten niet aanpassen; de huidige teksten worden gebruikt.', 'err'); return {}; }
+}
+on('#packZip','click', async ()=>{
+  const fmts = packFormats(); if (!fmts.length){ showMsg('Kies minstens één formaat.', 'err'); return; }
+  if (typeof JSZip==='undefined'){ showMsg('De ZIP-module is niet geladen. Probeer het opnieuw.', 'err'); return; }
+  showMsg(''); const texts = await packTexts(fmts); const zip = new JSZip();
+  try {
+    for (let i=0;i<fmts.length;i++){ const f = fmts[i]; busy(`Renderen: ${f.name}`, i/fmts.length); const d = {...D, ...(texts[f.id]||{})}; zip.file(`${GROUPS[f.g]}/${fileBase(f, d)}.png`, await renderBlob(f, d)); }
+    busy('ZIP inpakken…', 1); const blob = await zip.generateAsync({type:'blob'}); busy(null);
+    if (await save(`dhc-campagnepakket-${slug(D.title||byId(D.asset).name)}.zip`, blob)) showMsg(`${fmts.length} formaten opgeslagen in één ZIP.`, 'ok');
+  } catch(e){ busy(null); showMsg('Pakket maken mislukt: '+e.message, 'err'); }
+});
+on('#packLib','click', async ()=>{
+  const fmts = packFormats(); if (!fmts.length){ showMsg('Kies minstens één formaat.', 'err'); return; }
+  const texts = await packTexts(fmts); busy(null);
+  const group = 'p' + Date.now().toString(36);
+  for (const f of fmts){ const d = {...D, ...(texts[f.id]||{})}; await storeItem(null, {title:`${$('#s-title').value || byId(D.asset).name} · ${f.name}`, format:f.id, design:d, status:'concept', date:$('#s-date').value||'', pack:group}); }
+  showMsg(`${fmts.length} ontwerpen in de bibliotheek gezet als concept.`, 'ok');
+});
+
+/* ---------------- AI ---------------- */
+const ANGLES = {
+  rekensom:'De rekensom: een verhuurwerkplaats rekent per kwartier, de DHC kost € 85 per jaar met alles inbegrepen.',
+  scrollen:'Handen in plaats van scrollen: een uur scrollen levert niks op, in dat uur had je je banden kunnen wisselen. Met je handen werken is goed voor je.',
+  pov:'TikTok-stijl, eigentijds en luchtig: "POV: je kunt het gewoon zelf." Jong publiek aanspreken zonder te forceren.',
+  '1957':'Sinds 1957: bijna 70 jaar kennis en machines, nu op zoek naar de volgende generatie makers. Jong en oud samen.',
+  beurs:'Uitnodiging: kom langs op woensdag 28 oktober bij Drachten Maakt \'t in De Sluisfabriek, en loop door naar de werkplaats om de hoek.',
+};
+function aiPrompt(task){
+  return `Je schrijft wervende teksten in het Nederlands voor de Drachtster Hobby Club. De club is niet commercieel en zoekt nieuwe, ook jongere, leden. Schrijf concreet, menselijk en kort, zonder clichés en zonder uitroeptekens-spam. Verzin geen feiten: gebruik alleen deze feiten.
+FEITEN:
+${BRAND.facts}
+
+Illustratie in het ontwerp: ${byId(D.asset).name} (${byId(D.asset).desc})
+Invalshoek: ${ANGLES[D.angle] || ANGLES.rekensom}
+Formaat: ${fmtById(FMT).name} (${fmtById(FMT).px.join('×')} px)
+
+${task}`;
+}
+on('#aiWrite','click', async ()=>{
+  const out = $('#aiOut');
+  if (!sample){ out.innerHTML = `<div class="msg err">AI is niet beschikbaar in deze weergave.</div>`; return; }
+  out.innerHTML = `<div class="msg">AI schrijft drie varianten…</div>`; $('#aiWrite').disabled = true;
+  try {
+    const res = await sample.json(aiPrompt(`Schrijf 3 verschillende varianten voor dit ontwerp. Per variant:
+- eyebrow: korte bovenregel, max 6 woorden
+- headline: kop van max 9 woorden; zet 1 tot 3 kernwoorden tussen *sterretjes* voor de accentkleur
+- body: max 18 woorden
+- cta: knoptekst, max 5 woorden
+- badge: korte badgetekst, meestal "€ 85" ; badgeSub: max 4 woorden
+Antwoord als JSON: {"varianten":[{"eyebrow":"","headline":"","body":"","cta":"","badge":"","badgeSub":""}]}`), {modelTier:'default'});
+    const vs = Array.isArray(res?.varianten) ? res.varianten.slice(0,3) : [];
+    if (!vs.length) throw new Error('Geen bruikbaar antwoord');
+    out.innerHTML = vs.map((v,i)=>`<button type="button" class="ai-card" data-i="${i}"><small>${esc(v.eyebrow)}</small><b>${esc(String(v.headline||'').replace(/\*/g,''))}</b><span>${esc(v.body)}</span><small>Knop: ${esc(v.cta)}</small></button>`).join('') + `<p class="note">Klik op een variant om hem te gebruiken.</p>`;
+    out.onclick = e => { const c = e.target.closest('.ai-card'); if (!c) return; const v = vs[+c.dataset.i]; setD({eyebrow:v.eyebrow||D.eyebrow, headline:v.headline||D.headline, body:v.body||D.body, cta:v.cta||D.cta, badge:v.badge||D.badge, badgeSub:v.badgeSub||D.badgeSub}); };
+  } catch(e){ out.innerHTML = `<div class="msg err">${e?.code==='rate_limited' ? 'Even te veel verzoeken. Probeer het zo opnieuw.' : e?.code==='not_granted' ? 'Je hebt de AI geen toestemming gegeven.' : 'De AI gaf geen bruikbaar antwoord. Probeer het opnieuw.'}</div>`; }
+  $('#aiWrite').disabled = false;
+});
+on('#aiCaption','click', async ()=>{
+  const out = $('#capOut');
+  if (!sample){ out.innerHTML = `<div class="msg err">AI is niet beschikbaar in deze weergave.</div>`; return; }
+  out.innerHTML = `<div class="msg">Bijschrift schrijven…</div>`;
+  try {
+    const f = fmtById(FMT);
+    const res = await sample.json(aiPrompt(`Het ontwerp toont: bovenregel "${D.eyebrow}", kop "${D.headline.replace(/\*/g,'')}", tekst "${D.body}", knop "${D.cta}".
+Schrijf een bericht om bij deze afbeelding te plaatsen op ${f.g==='social' ? f.name : 'social media'}: een bijschrift van 40 tot 90 woorden met een duidelijke oproep (langskomen op 28 oktober of lid worden), 5 tot 8 relevante Nederlandse hashtags (lokaal: Drachten, Smallingerland, Friesland), en een alt-tekst van max 25 woorden die beschrijft wat er op de afbeelding staat.
+Antwoord als JSON: {"caption":"","hashtags":["#..."],"alt":""}`), {modelTier:'default'});
+    const text = `${res.caption||''}\n\n${(res.hashtags||[]).join(' ')}`;
+    D.caption = text; D.alt = res.alt || ''; saveDraft();
+    out.innerHTML = `<div class="caption" id="capText">${esc(text)}</div><p class="note" style="margin-top:6px"><b>Alt-tekst:</b> ${esc(D.alt)}</p><button class="btn sm" type="button" id="capCopy" style="margin-top:6px">Kopieer bijschrift</button>`;
+    $('#capCopy').onclick = async () => { try { await navigator.clipboard.writeText(text); $('#capCopy').textContent = 'Gekopieerd'; } catch(e){ const r = document.createRange(); r.selectNodeContents($('#capText')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); $('#capCopy').textContent = 'Geselecteerd, kopieer met Ctrl+C'; } };
+  } catch(e){ out.innerHTML = `<div class="msg err">Het bijschrift lukte niet. Probeer het opnieuw.</div>`; }
+});
+
+/* ---------------- Bibliotheek (db) ---------------- */
+let localItems = [];
+try { localItems = JSON.parse(localStorage.getItem('dhc-studio-items')||'[]'); } catch(e){}
+function persistLocal(){ try { localStorage.setItem('dhc-studio-items', JSON.stringify(localItems)); } catch(e){} }
+async function storeItem(id, data){
+  const doc = {...data, updated:new Date().toISOString()};
+  if (contentCol){
+    try { const ref = id ? contentCol.doc(id) : contentCol.doc(); await ref.set(doc); return ref.id; }
+    catch(e){ showMsg('Opslaan in de gedeelde bibliotheek lukte niet: '+(e.message||e.code), 'err'); return null; }
+  }
+  const nid = id || ('l'+Date.now().toString(36)+Math.random().toString(36).slice(2,6));
+  localItems = localItems.filter(x=>x.id!==nid); localItems.push({id:nid, ...doc}); persistLocal(); ITEMS = localItems; renderLib(); renderPlan(); return nid;
+}
+async function deleteItem(id){
+  if (contentCol){ try { await contentCol.doc(id).delete(); } catch(e){ alertLib('Verwijderen lukte niet.'); } return; }
+  localItems = localItems.filter(x=>x.id!==id); persistLocal(); ITEMS = localItems; renderLib(); renderPlan();
+}
+function alertLib(t){ const el = $('#libFilters'); el.insertAdjacentHTML('beforeend', `<span class="msg err">${esc(t)}</span>`); }
+async function saveCurrent(asNew){
+  const title = $('#s-title').value.trim() || `${byId(D.asset).name} · ${fmtById(FMT).name}`;
+  D.title = title;
+  const id = await storeItem(asNew ? null : editingId, {title, format:FMT, design:{...D}, status:$('#s-status').value, date:$('#s-date').value||''});
+  if (id){ editingId = id; saveDraft(); syncForm(); showMsg(asNew || !editingId ? 'Opgeslagen in de bibliotheek.' : 'Wijzigingen opgeslagen.', 'ok'); }
+}
+on('#save','click', ()=>saveCurrent(false));
+on('#saveNew','click', ()=>saveCurrent(true));
+on('#newDesign','click', ()=>{ D = NEW_DESIGN(); editingId = null; $('#s-title').value=''; $('#s-status').value='idee'; $('#s-date').value=''; $('#aiOut').innerHTML=''; $('#capOut').innerHTML=''; syncForm(); redraw(); });
+function openItem(id){
+  const it = ITEMS.find(x=>x.id===id); if (!it) return;
+  D = {...NEW_DESIGN(), ...(it.design||{})}; FMT = it.format || FMT; editingId = id;
+  $('#s-title').value = it.title || ''; $('#s-status').value = it.status || 'concept'; $('#s-date').value = it.date || '';
+  $('#capOut').innerHTML = D.caption ? `<div class="caption">${esc(D.caption)}</div>` : '';
+  setView('studio'); syncForm(); redraw();
+}
+let libFilter = 'alle';
+const STATUS = {idee:'Idee', concept:'Concept', klaar:'Klaar', gepland:'Gepland', gepubliceerd:'Gepubliceerd'};
+const thumbQueue = new Map();
+async function thumb(canvas, it, box){
+  const f = fmtById(it.format), d = {...NEW_DESIGN(), ...(it.design||{})};
+  const s = Math.min(box/f.px[0], box/f.px[1]) * Math.min(2, window.devicePixelRatio||1);
+  canvas.width = Math.max(1, Math.round(f.px[0]*s)); canvas.height = Math.max(1, Math.round(f.px[1]*s));
+  canvas.style.aspectRatio = `${f.px[0]} / ${f.px[1]}`;
+  try { await render(canvas.getContext('2d'), f, d, {scale:s}); } catch(e){}
+}
+function renderLib(){
+  const counts = {alle:ITEMS.length}; for (const it of ITEMS) counts[it.status] = (counts[it.status]||0)+1;
+  $('#libFilters').innerHTML = ['alle', ...Object.keys(STATUS)].map(s=>`<button type="button" class="btn sm ${libFilter===s?'dark':''}" data-f="${s}">${s==='alle'?'Alles':STATUS[s]} <span class="mono">${counts[s]||0}</span></button>`).join('');
+  const list = ITEMS.filter(it => libFilter==='alle' || it.status===libFilter).sort((a,b)=> String(b.updated).localeCompare(String(a.updated)));
+  if (!list.length){ $('#lib').innerHTML = `<div class="empty"><h3>Nog niets hier</h3><p>Maak een ontwerp in de Studio en kies Opslaan. Met een campagnepakket zet je in één keer alle formaten klaar.</p><button class="btn primary" type="button" data-go="studio">Naar de Studio</button></div>`; return; }
+  $('#lib').innerHTML = list.map(it => { const f = fmtById(it.format); return `<article class="card"><div class="thumb"><canvas data-thumb="${it.id}"></canvas></div><div class="meta"><b title="${esc(it.title)}">${esc(it.title)}</b><div class="row"><span class="chip st-${esc(it.status)}">${esc(STATUS[it.status]||it.status)}</span><span class="note">${esc(f.name)}</span></div>${it.date?`<span class="note mono">${esc(new Date(it.date+'T12:00').toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'}))}</span>`:''}</div><div class="acts"><button class="btn sm dark" type="button" data-open="${it.id}">Openen</button><button class="btn sm" type="button" data-dup="${it.id}">Dupliceren</button><button class="btn sm ghost" type="button" data-del="${it.id}">Verwijderen</button></div></article>`; }).join('');
+  document.querySelectorAll('#lib canvas[data-thumb]').forEach(c => thumb(c, ITEMS.find(x=>x.id===c.dataset.thumb), 240));
+}
+on('#libFilters','click', e=>{ const b=e.target.closest('[data-f]'); if (b){ libFilter=b.dataset.f; renderLib(); } });
+on('#lib','click', async e=>{
+  const g = e.target.closest('[data-go]'); if (g) return setView(g.dataset.go);
+  const o = e.target.closest('[data-open]'); if (o) return openItem(o.dataset.open);
+  const du = e.target.closest('[data-dup]'); if (du){ const it = ITEMS.find(x=>x.id===du.dataset.dup); if (it) await storeItem(null, {...it, id:undefined, title:it.title+' (kopie)', status:'concept'}); return; }
+  const de = e.target.closest('[data-del]');
+  if (de){ if (de.dataset.confirm){ await deleteItem(de.dataset.del); } else { de.dataset.confirm='1'; de.textContent='Zeker weten?'; de.classList.add('dark'); setTimeout(()=>{ if (de.isConnected){ delete de.dataset.confirm; de.textContent='Verwijderen'; de.classList.remove('dark'); } }, 3000); } }
+});
+function renderPlan(){
+  const start = new Date(2026,9,16), days = [];
+  for (let i=0;i<31;i++){ const d = new Date(start); d.setDate(d.getDate()+i); days.push(d); }
+  const key = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const byDay = {}; const none = [];
+  for (const it of ITEMS){ if (it.date) (byDay[it.date] = byDay[it.date]||[]).push(it); else none.push(it); }
+  const item = it => `<div class="pitem" data-open="${it.id}"><canvas data-thumb="${it.id}"></canvas><span>${esc(it.title)}</span><span class="chip st-${esc(it.status)}">${esc(STATUS[it.status]||'')}</span></div>`;
+  $('#plan').innerHTML = days.filter(d => byDay[key(d)] || key(d)==='2026-10-28' || d.getDay()===1 || +d===+today).map(d => {
+    const k = key(d), list = byDay[k]||[];
+    return `<div class="day${k==='2026-10-28'?' event':''}${d<today?' past':''}"><div class="dh"><b>${d.toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'})}</b>${k==='2026-10-28'?'<span class="chip" style="color:var(--warn)">Drachten Maakt \'t</span>':+d===+today?'<span class="chip">Vandaag</span>':''}</div>${list.map(item).join('') || '<span class="note">Nog niets gepland</span>'}</div>`;
+  }).join('') + (none.length ? `<div class="day"><div class="dh"><b>Zonder datum</b><span class="note mono">${none.length}</span></div>${none.map(item).join('')}</div>` : '');
+  document.querySelectorAll('#plan canvas[data-thumb]').forEach(c => thumb(c, ITEMS.find(x=>x.id===c.dataset.thumb), 36));
+}
+on('#plan','click', e=>{ const o = e.target.closest('[data-open]'); if (o) openItem(o.dataset.open); });
+
+/* ---------------- Merk ---------------- */
+function syncBrand(){
+  $('#b-mark').value = BRAND.mark; $('#b-name').value = BRAND.name; $('#b-footer').value = BRAND.footer; $('#b-qr').value = BRAND.qr; $('#b-facts').value = BRAND.facts;
+  $('#logoPrev').innerHTML = BRAND.logoUrl ? `<img src="${esc(BRAND.logoUrl)}" alt="Logo">` : LOGO_SVG;
+  $('#logoNote').textContent = BRAND.logoUrl ? 'Je eigen upload staat nu op alle uitingen. Met Standaardlogo gebruiken komt het DHC-logo terug.' : 'Het DHC-logo staat standaard op alle uitingen en kleurt mee met het thema. Upload alleen een bestand als je het wilt vervangen.';
+}
+async function saveBrand(){
+  BRAND = {...BRAND, mark:$('#b-mark').value.trim()||'DHC', name:$('#b-name').value.trim(), footer:$('#b-footer').value.trim(), qr:$('#b-qr').value.trim()||DEFAULT_BRAND.qr, facts:$('#b-facts').value.trim()||DEFAULT_BRAND.facts};
+  try { localStorage.setItem('dhc-studio-brand', JSON.stringify(BRAND)); } catch(e){}
+  if (brandRef){ try { await brandRef.set(BRAND); } catch(e){} }
+  await refreshLogo(); syncBrand(); syncForm(); imgCache.clear(); redraw();
+}
+on('#b-save','click', async ()=>{ await saveBrand(); $('#b-save').textContent='Opgeslagen'; setTimeout(()=>$('#b-save').textContent='Merk opslaan', 1500); });
+on('#logoFile','change', async e=>{
+  const file = e.target.files[0]; if (!file) return;
+  if (assetsCap){
+    try { const r = await assetsCap.upload(file); BRAND.logoUrl = r.url; BRAND.logoId = r.id; }
+    catch(err){ $('#logoNote').textContent = 'Uploaden lukte niet: ' + (err.message||err.code); return; }
+  } else {
+    BRAND.logoUrl = await new Promise(res => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(file); });
+  }
+  await saveBrand();
+});
+on('#logoClear','click', async ()=>{ BRAND.logoUrl=''; BRAND.logoId=''; await saveBrand(); });
+
+/* ---------------- Views ---------------- */
+function setView(v){
+  view = v; document.querySelectorAll('#views button').forEach(b=>b.classList.toggle('on', b.dataset.view===v));
+  for (const id of ['studio','lib','plan','brand']) $('#v-'+id).hidden = id!==v;
+  if (v==='lib') renderLib(); if (v==='plan') renderPlan(); if (v==='brand') syncBrand();
+  if (v!=='studio' && playing) setPlaying(false); if (v==='studio') redraw();
+  try { localStorage.setItem('dhc-studio-view', v); } catch(e){}
+}
+on('#views','click', e=>{ const b=e.target.closest('button'); if (b) setView(b.dataset.view); });
+
+/* ---------------- Start ---------------- */
+(function days(){ const now=new Date(); const a=new Date(now.getFullYear(),now.getMonth(),now.getDate()); $('#days').textContent = Math.max(0, Math.round((new Date(2026,9,28)-a)/864e5)); })();
+try { const b = JSON.parse(localStorage.getItem('dhc-studio-brand')||'null'); if (b) BRAND = {...DEFAULT_BRAND, ...b}; } catch(e){}
+buildStudio(); syncForm();
+ITEMS = localItems;
+(async () => {
+  try { await document.fonts.load('900 40px "Big Shoulders Display"'); await document.fonts.load('600 20px "IBM Plex Sans"'); await document.fonts.load('600 20px "IBM Plex Mono"'); await document.fonts.load('400 20px "Saira Stencil One"'); await document.fonts.load('800 20px "Bricolage Grotesque"'); } catch(e){}
+  await refreshLogo();
+  draw();
+  let v = 'studio'; try { v = localStorage.getItem('dhc-studio-view') || 'studio'; } catch(e){}
+  if (v !== 'studio') setView(v);
+})();
+(async () => {
+  [db, assetsCap, downloads, sample] = await Promise.all(['db','assets','downloads','sample'].map(capability));
+  if (!downloads) for (const id of ['exPng','exPdf','exMp4','exSvg','packZip']) $('#'+id).title = 'Downloaden is niet beschikbaar in deze weergave';
+  if (!db){ setSync('Opgeslagen in deze browser'); return; }
+  contentCol = db.collection('content'); brandRef = db.doc('settings/brand');
+  setSync('Verbinden…');
+  brandRef.onSnapshot(async snap => { if (snap.exists){ BRAND = {...DEFAULT_BRAND, ...snap.data()}; await refreshLogo(); if (view==='brand') syncBrand(); syncForm(); imgCache.clear(); redraw(); } }, ()=>{});
+  contentCol.onSnapshot(snap => {
+    ITEMS = snap.docs.map(d => ({id:d.id, ...d.data()}));
+    setSync(`Gedeelde bibliotheek · ${ITEMS.length} ontwerp${ITEMS.length===1?'':'en'}`);
+    if (view==='lib') renderLib(); if (view==='plan') renderPlan();
+  }, () => setSync('Verbinding met de bibliotheek verbroken'));
+})();
+</script>

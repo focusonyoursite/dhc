@@ -1,0 +1,5 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000}#s{width:100vw;height:100vh}</style></head>
+<body><div id="s"></div><script src="logo-anim.js"></script><script>
+const q=new URLSearchParams(location.search);
+window.A=DHCAnim.mount(document.getElementById('s'),{W:+q.get('w'),H:+q.get('h'),layout:q.get('layout'),theme:q.get('theme'),fit:+(q.get('fit')||.62)});
+</script></body></html>

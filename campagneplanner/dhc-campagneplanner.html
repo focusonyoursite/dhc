@@ -1,0 +1,773 @@
+<title>DHC Campagneplanner</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2264%22%20height%3D%2264%22%20role%3D%22img%22%20aria-label%3D%22Drachtster%20Hobby%20Club%22%3E%3Ctitle%3EDrachtster%20Hobby%20Club%3C/title%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2210%22%20fill%3D%22%232B2828%22/%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20fill-rule%3D%22evenodd%22%20transform%3D%22translate%285.12%2016.9493%29%20scale%280.03579%29%22%20d%3D%22M0%200H100A420.5%20420.5%200%200%201%20482%20244.73V596.27A420.5%20420.5%200%200%201%20100%20841H0Z%20M0%20199H126A203%20203%200%200%201%20126%20605H0Z%20M482%200h39V841h-39Z%20M675%200h152v320H675ZM675%20521h152v320H675Z%20M1502%200H1402A420.5%20420.5%200%200%200%201020%20244.73V596.27A420.5%20420.5%200%200%200%201402%20841H1502Z%20M1502%20199H1376A203%20203%200%200%200%201376%20605H1502Z%20M981%200h39V841h-39Z%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: werkplaats-bord. Smalle bedieningskolom links (de "schakelkast"), werkvlak rechts met tabbladen; presentatiemodus als volledig scherm. */
+:root{
+  --bg:#e9ece6; --panel:#f7f8f4; --ink:#1b2420; --muted:#5b6a63; --line:#c9d0c7;
+  --machine:#2f6b57; --machine-ink:#ffffff; --signal:#f0b400; --signal-ink:#1b2420;
+  --good:#2f7d4a; --warn:#b26a00; --bad:#b3362b;
+  --g1:#5f9a84; --g2:#3d7a64; --g3:#2a5948;
+  --y1:#ffd34d; --y2:#e5ac00; --y3:#b98a00;
+  --s1:#d6dcd6; --s2:#aeb8b0; --s3:#8c978f;
+  --d1:#59625d; --d2:#3b423e; --d3:#262b28;
+  --r1:#e2735f; --r2:#c4513d; --r3:#9a3a2b;
+  --font-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --font-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121815; --panel:#1a221e; --ink:#e7ece8; --muted:#9aa9a1; --line:#2d3833;
+  --machine:#4f9b80; --machine-ink:#0d1411; --signal:#ffc928; --signal-ink:#14110a;
+  --good:#5cc27f; --warn:#f0a43a; --bad:#ef7363;
+  --g1:#5f9a84; --g2:#3d7a64; --g3:#2a5948;
+  --s1:#56615a; --s2:#434c47; --s3:#323935;
+  --d1:#7a847e; --d2:#59625d; --d3:#3b423e;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121815; --panel:#1a221e; --ink:#e7ece8; --muted:#9aa9a1; --line:#2d3833;
+  --machine:#4f9b80; --machine-ink:#0d1411; --signal:#ffc928; --signal-ink:#14110a;
+  --good:#5cc27f; --warn:#f0a43a; --bad:#ef7363;
+  --s1:#56615a; --s2:#434c47; --s3:#323935;
+  --d1:#7a847e; --d2:#59625d; --d3:#3b423e;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* Kop */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ink);color:var(--bg)}
+header.top .bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding-block:12px;max-width:1360px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;flex-wrap:wrap}
+.brand .blogo{height:30px;width:auto;flex:none}
+.plogo{height:34px;width:auto;flex:none}
+.slide .slogo{height:clamp(48px,7vw,84px);width:auto;align-self:flex-start}
+.brand b{font-family:var(--font-display);font-weight:900;font-size:28px;letter-spacing:.02em;line-height:1}
+.brand span{font-size:13px;opacity:.75}
+.hazard{height:6px;background:repeating-linear-gradient(135deg,var(--signal) 0 14px,var(--ink) 14px 28px)}
+.count{margin-left:auto;display:flex;align-items:center;gap:14px}
+.count .days{font-family:var(--font-display);font-weight:800;font-size:26px;color:var(--signal);line-height:1}
+.count small{display:block;font-size:12px;opacity:.75;line-height:1.2}
+.btn{border:0;border-radius:4px;padding:9px 14px;font-weight:600;cursor:pointer;background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+.btn.primary{background:var(--signal);color:var(--signal-ink);border-color:transparent}
+.btn.ghost{background:transparent;border-color:currentColor;color:inherit}
+.btn:hover{filter:brightness(1.05)}
+.sync{font-size:12px;opacity:.75}
+
+/* Hoofdindeling */
+main{max-width:1360px;margin:0 auto;padding-block:20px 60px;display:grid;grid-template-columns:330px 1fr;gap:24px;align-items:start}
+@media (max-width:900px){main{grid-template-columns:1fr}}
+aside.controls{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px);display:flex;flex-direction:column;gap:16px}
+@media (max-width:900px){aside.controls{position:static}}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;min-width:0}
+.label{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.05}
+h2{font-size:34px} h3{font-size:22px}
+p{margin:0}
+
+/* Budget */
+.budget-num{font-family:var(--font-display);font-weight:900;font-size:48px;line-height:1}
+.budget-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);gap:8px}
+input[type=range]{width:100%;accent-color:var(--machine);margin:10px 0 4px}
+.track{position:relative;height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:6px}
+.track i{position:absolute;inset:0 auto 0 0;background:var(--machine)}
+.track i.min{background:var(--signal)}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.tiers button{padding:6px 4px;font-size:12px;border-radius:4px;border:1px solid var(--line);background:transparent;cursor:pointer}
+.tiers button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* Schakelaars */
+.switch{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line);cursor:pointer}
+.switch:first-of-type{border-top:0}
+.switch input{position:absolute;opacity:0;pointer-events:none}
+.knob{flex:none;width:40px;height:22px;border-radius:11px;background:var(--line);position:relative;transition:background .15s;margin-top:2px}
+.knob::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--panel);transition:transform .15s}
+.switch input:checked + .knob{background:var(--machine)}
+.switch input:checked + .knob::after{transform:translateX(18px)}
+.switch input:focus-visible + .knob{outline:3px solid var(--signal);outline-offset:2px}
+.switch input:disabled + .knob{opacity:.5}
+.switch b{display:block;font-weight:600}
+.switch small{display:block;color:var(--muted);font-size:13px;line-height:1.35}
+.vol-row{display:flex;align-items:center;gap:10px}
+.vol-row input{flex:1}
+.vol-need{display:flex;justify-content:space-between;font-size:14px;margin-top:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.chip.good{color:var(--good)} .chip.warn{color:var(--warn)} .chip.bad{color:var(--bad)} .chip.muted{color:var(--muted)}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--ink);overflow-x:auto;scrollbar-width:none}
+.tabs button{border:0;background:transparent;padding:10px 14px;font-weight:600;cursor:pointer;color:var(--muted);border-radius:4px 4px 0 0;white-space:nowrap}
+.tabs button.on{background:var(--ink);color:var(--bg)}
+section.pane{padding-top:20px;display:flex;flex-direction:column;gap:20px;min-width:0}
+.workspace{min-width:0}
+
+/* Overzicht */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center}
+@media (max-width:700px){.hero{grid-template-columns:1fr}}
+.hero p.lead{font-size:17px;max-width:58ch;margin-top:10px}
+.iso{width:100%;height:auto;display:block}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{padding:14px;border-radius:6px;background:var(--panel);border:1px solid var(--line)}
+.stat .v{font-family:var(--font-display);font-weight:800;font-size:32px;line-height:1.05}
+.stat .k{font-size:13px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+ul.clean{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+ul.clean li{display:flex;gap:10px;align-items:baseline}
+.tick{flex:none;width:18px;height:18px;border-radius:3px;background:var(--machine);color:var(--machine-ink);font-size:12px;display:grid;place-items:center;font-weight:700}
+
+/* Vergelijking */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:0;border:2px solid var(--ink);border-radius:6px;overflow:hidden}
+@media (max-width:600px){.compare{grid-template-columns:1fr}}
+.compare > div{padding:18px}
+.compare .them{background:var(--panel);color:var(--ink)}
+.compare .us{background:var(--machine);color:var(--machine-ink)}
+.compare .price{font-family:var(--font-display);font-weight:900;font-size:56px;line-height:1}
+.compare .us .price{color:var(--machine-ink)}
+.calc{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;margin-top:14px;font-size:14px}
+.calc input[type=number]{width:80px;padding:5px 8px;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
+.save{font-size:18px;margin-top:12px}
+.save b{font-family:var(--font-display);font-size:30px;font-weight:900}
+
+/* Materialen */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:640px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;background:var(--bg)}
+tr.off td{color:var(--muted)}
+tr.off td.name{text-decoration:line-through;text-decoration-color:var(--line)}
+tr.group td{background:var(--bg);font-family:var(--font-display);font-weight:800;font-size:17px;letter-spacing:.02em}
+td.num{text-align:right;font-family:var(--font-mono)}
+td.num input{width:72px;text-align:right;padding:4px 6px;border:1px solid var(--line);border-radius:4px;background:var(--bg);font-family:var(--font-mono)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:4px 8px;font-size:12px;cursor:pointer;color:var(--muted)}
+.seg button.on{background:var(--ink);color:var(--bg)}
+.src{font-size:12px;color:var(--muted)}
+.note{font-size:13px;color:var(--muted)}
+
+/* Campagne */
+.themes{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media (max-width:700px){.themes{grid-template-columns:1fr}}
+.theme{text-align:left;border:2px solid var(--line);border-radius:6px;padding:16px;background:var(--panel);cursor:pointer;display:flex;flex-direction:column;gap:8px}
+.theme.on{border-color:var(--ink);box-shadow:6px 6px 0 var(--signal)}
+.theme .tag{font-family:var(--font-display);font-weight:900;font-size:26px;line-height:1}
+.theme small{color:var(--muted)}
+.flyer{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center}
+@media (max-width:700px){.flyer{grid-template-columns:1fr}}
+.poster{aspect-ratio:1/1.414;max-width:100%;background:var(--ink);color:var(--bg);border-radius:4px;padding:22px;display:flex;flex-direction:column;gap:12px;overflow:hidden;position:relative}
+.poster .ph{font-family:var(--font-display);font-weight:900;font-size:clamp(28px,4.2vw,44px);line-height:.95;text-transform:uppercase}
+.poster .ph em{font-style:normal;color:var(--signal)}
+.poster .pfoot{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;font-size:13px}
+.qr{width:64px;height:64px;background:
+  conic-gradient(from 90deg at 30% 30%,var(--bg) 25%,transparent 0) 0 0/16px 16px,
+  repeating-linear-gradient(90deg,var(--bg) 0 4px,transparent 4px 8px);border:4px solid var(--bg)}
+.poster .price-tag{background:var(--signal);color:var(--signal-ink);font-family:var(--font-display);font-weight:900;font-size:22px;padding:4px 10px;align-self:flex-start;transform:rotate(-3deg)}
+.ideas li{padding:10px 12px;border-left:4px solid var(--signal);background:var(--panel);border-radius:0 4px 4px 0}
+
+/* Draaiboek */
+.timeline{display:flex;flex-direction:column;gap:0;border-left:3px solid var(--ink);margin-left:8px}
+.ms{position:relative;padding:0 0 18px 22px}
+.ms::before{content:"";position:absolute;left:-9px;top:4px;width:15px;height:15px;border-radius:50%;background:var(--panel);border:3px solid var(--ink)}
+.ms.past::before{background:var(--ink)}
+.ms.due::before{background:var(--signal)}
+.ms .d{font-family:var(--font-mono);font-size:13px;color:var(--muted)}
+.ms b{display:block}
+.ms .items{font-size:14px;color:var(--muted)}
+.day{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
+.day .t{font-family:var(--font-mono);font-weight:600}
+.where{font-size:11px;font-weight:700;padding:1px 6px;border-radius:3px;background:var(--machine);color:var(--machine-ink);margin-right:6px;letter-spacing:.04em}
+.where.club{background:var(--signal);color:var(--signal-ink)}
+
+/* Beslispunten */
+.dec{display:flex;flex-direction:column;gap:10px}
+.dec-item{display:grid;grid-template-columns:1fr auto;gap:8px 16px;align-items:center;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-radius:6px}
+.dec-item p{font-size:13px;color:var(--muted)}
+.dec-item .seg button{padding:6px 12px;font-size:13px}
+.dec-item .seg button.yes.on{background:var(--good);color:#fff}
+.dec-item .seg button.no.on{background:var(--bad);color:#fff}
+@media (max-width:560px){.dec-item{grid-template-columns:1fr}}
+textarea{width:100%;min-height:90px;padding:10px;border:1px solid var(--line);border-radius:4px;background:var(--bg);resize:vertical}
+
+.demo{font-size:13px;padding:8px 12px;border-radius:4px;background:var(--panel);border:1px dashed var(--warn);color:var(--ink)}
+.demo b{color:var(--warn)}
+
+/* Presentatie */
+.present[hidden]{display:none!important}
+.present{position:fixed;inset:0;z-index:50;background:var(--ink);color:var(--bg);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.present .stage{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;padding-block:24px}
+.slide{width:100%;max-width:1100px;display:flex;flex-direction:column;gap:22px}
+.slide h1{font-family:var(--font-display);font-weight:900;font-size:clamp(40px,7vw,92px);line-height:.92;margin:0;text-transform:uppercase;text-wrap:balance}
+.slide h1 em{font-style:normal;color:var(--signal)}
+.slide .sub{font-size:clamp(17px,2vw,24px);max-width:60ch;opacity:.9}
+.slide .big{font-family:var(--font-display);font-weight:900;font-size:clamp(56px,10vw,140px);line-height:.9;color:var(--signal)}
+.slide .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:760px){.slide .grid3{grid-template-columns:1fr}}
+.slide .card{border:2px solid color-mix(in srgb,var(--bg) 30%,transparent);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.slide .card.on{border-color:var(--signal);background:color-mix(in srgb,var(--signal) 12%,transparent)}
+.slide .card .v{font-family:var(--font-display);font-weight:900;font-size:40px;line-height:1}
+.slide ul{margin:0;padding-left:20px;font-size:clamp(16px,1.8vw,21px);display:flex;flex-direction:column;gap:6px}
+.slide .split{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center}
+@media (max-width:760px){.slide .split{grid-template-columns:1fr}}
+.slide .dec-item{background:transparent;border-color:color-mix(in srgb,var(--bg) 30%,transparent)}
+.slide .dec-item p{color:inherit;opacity:.75}
+.slide .dec-item .seg{border-color:color-mix(in srgb,var(--bg) 30%,transparent)}
+.slide .dec-item .seg button{color:inherit}
+.present .pbar{display:flex;align-items:center;gap:12px;padding-block:12px;border-top:1px solid color-mix(in srgb,var(--bg) 20%,transparent)}
+.present .dots{display:flex;gap:6px;flex-wrap:wrap}
+.present .dots button{width:10px;height:10px;border-radius:50%;border:0;background:color-mix(in srgb,var(--bg) 30%,transparent);cursor:pointer;padding:0}
+.present .dots button.on{background:var(--signal)}
+.present .pbar .sp{margin-left:auto;display:flex;gap:8px}
+.present .btn{background:transparent;color:var(--bg);border-color:color-mix(in srgb,var(--bg) 40%,transparent)}
+.present .btn.primary{background:var(--signal);color:var(--signal-ink)}
+@media (prefers-reduced-motion: no-preference){.slide{animation:in .35s ease-out}@keyframes in{from{opacity:.4;transform:translateY(8px)}to{opacity:1;transform:none}}}
+</style>
+
+<header class="top">
+  <div class="bar wrap">
+    <div class="brand"><svg class="blogo" viewBox="0 0 1502 841" role="img" aria-label="DHC"><path fill="currentColor" fill-rule="evenodd" d="M0 0H100A420.5 420.5 0 0 1 482 244.73V596.27A420.5 420.5 0 0 1 100 841H0Z M0 199H126A203 203 0 0 1 126 605H0Z M482 0h39V841h-39Z M675 0h152v320H675ZM675 521h152v320H675Z M1502 0H1402A420.5 420.5 0 0 0 1020 244.73V596.27A420.5 420.5 0 0 0 1402 841H1502Z M1502 199H1376A203 203 0 0 0 1376 605H1502Z M981 0h39V841h-39Z"/></svg><b>CAMPAGNEPLANNER</b><span>Drachtster Hobby Club op Drachten Maakt 't</span></div>
+    <div class="count">
+      <div><div class="days" id="daysLeft">12</div><small>dagen tot<br>woe 28 okt</small></div>
+      <button class="btn primary" id="btnPresent" type="button">Presenteer aan bestuur</button>
+    </div>
+  </div>
+  <div class="hazard"></div>
+</header>
+
+<main class="wrap">
+  <aside class="controls">
+    <div class="box">
+      <div class="label">Budget</div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:6px">
+        <div class="budget-num mono" id="budgetNum">€ 0</div>
+        <span class="chip muted" id="tierChip">Basis</span>
+      </div>
+      <input type="range" id="budget" min="0" max="2000" step="25" value="300" aria-label="Budget in euro">
+      <div class="budget-meta"><span>Minimum basisset <b class="mono" id="minNum">€ 0</b></span><span>Ingepland <b class="mono" id="usedNum">€ 0</b></span></div>
+      <div class="track" aria-hidden="true"><i id="trackUsed"></i><i class="min" id="trackMin"></i></div>
+      <div class="tiers" id="tiers">
+        <button type="button" data-tier="min">Minimum</button>
+        <button type="button" data-tier="plus">Plus</button>
+        <button type="button" data-tier="max">Compleet</button>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="label">Wat doen we op 28 oktober?</div>
+      <label class="switch"><input type="checkbox" id="sc-beurs" checked disabled><span class="knob"></span><span><b>Stand in De Sluisfabriek</b><small>13.00–17.00, Tussendiepen 6. Altijd onderdeel van het plan.</small></span></label>
+      <label class="switch"><input type="checkbox" id="sc-opendag"><span class="knob"></span><span><b>Open Dag bij de club</b><small>Werkplaats open op Tussendiepen 57, met rondleidingen en machines in bedrijf.</small></span></label>
+      <label class="switch"><input type="checkbox" id="sc-workshops"><span class="knob"></span><span><b>Mini-workshops</b><small>Bezoekers maken zelf iets kleins mee naar huis. Alleen samen met de Open Dag.</small></span></label>
+      <label class="switch"><input type="checkbox" id="sc-online"><span class="knob"></span><span><b>Online campagne vooraf</b><small>Korte video's en een lokale social-advertentie in de 10 dagen ervoor.</small></span></label>
+    </div>
+
+    <div class="box">
+      <div class="label">Vrijwilligers</div>
+      <div class="vol-row" style="margin-top:8px"><input type="range" id="vol" min="0" max="30" step="1" value="6" aria-label="Beschikbare vrijwilligers"><b class="mono" id="volNum" style="min-width:2ch;text-align:right">6</b></div>
+      <div class="vol-need"><span>Nodig voor dit plan</span><b class="mono" id="volNeed">0</b></div>
+      <div style="margin-top:8px" id="volChip"></div>
+    </div>
+    <div class="sync wrapless" id="syncState" style="color:var(--muted)">Plan wordt geladen…</div>
+  </aside>
+
+  <div class="workspace">
+    <nav class="tabs" role="tablist" id="tabs">
+      <button type="button" data-tab="overzicht" class="on">Overzicht</button>
+      <button type="button" data-tab="materialen">Materialen &amp; kosten</button>
+      <button type="button" data-tab="campagne">Campagne</button>
+      <button type="button" data-tab="lid">Lid worden</button>
+      <button type="button" data-tab="draaiboek">Draaiboek</button>
+      <button type="button" data-tab="besluiten">Beslispunten</button>
+    </nav>
+    <section class="pane" id="pane"></section>
+  </div>
+</main>
+
+<div class="present" id="present" hidden>
+  <div class="stage wrap" id="stage"></div>
+  <div class="pbar wrap">
+    <div class="dots" id="dots"></div>
+    <div class="sp">
+      <button class="btn" type="button" id="pPrev">Vorige</button>
+      <button class="btn primary" type="button" id="pNext">Volgende</button>
+      <button class="btn" type="button" id="pClose">Sluiten</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- Gegevens (richtprijzen, demodata) ---------- */
+const EVENT = new Date('2026-10-28T13:00:00');
+const FEE = 85;
+const SCEN = {
+  beurs:{name:'Stand Sluisfabriek'}, opendag:{name:'Open Dag bij de club'},
+  workshops:{name:'Mini-workshops'}, online:{name:'Online campagne'}
+};
+// req = hoort bij de basisset van dat onderdeel; prio = volgorde waarin extra budget wordt besteed; lead = dagen levertijd (schatting)
+const CATALOG = [
+  {id:'rollup1',sc:'beurs',name:'Roll-up banner 85×200 cm met cassette',cost:45,req:true,lead:5,src:'Drukwerkdeal'},
+  {id:'flyer',sc:'beurs',name:'Flyers A5 dubbelzijdig, 500 stuks',cost:30,req:true,lead:4,src:'Drukwerkdeal'},
+  {id:'kaart',sc:'beurs',name:'QR-kaartjes "Gratis proefavond", 500 stuks',cost:22,req:true,lead:4,src:'Drukwerkdeal'},
+  {id:'scherm',sc:'beurs',name:'Interactieve presentatie in een lus op het scherm',cost:0,req:true,src:'Zelf (code)'},
+  {id:'aanmeld',sc:'beurs',name:'Online aanmeldpagina met QR-code',cost:0,req:true,src:'Zelf (code)'},
+  {id:'tablet',sc:'beurs',name:'Ter plekke aanmelden op eigen tablet of laptop',cost:0,req:true,src:'Eigen spullen'},
+  {id:'demo',sc:'beurs',name:'Werkstukken uit de werkplaats als blikvanger',cost:0,req:true,src:'Leden'},
+  {id:'traktatie',sc:'beurs',name:'Koffie, thee en iets lekkers op de stand',cost:20,req:true,src:'Zelf'},
+  {id:'rollup2',sc:'beurs',name:'Tweede roll-up met de prijsvergelijking',cost:45,prio:1,lead:5,src:'Drukwerkdeal'},
+  {id:'poster',sc:'beurs',name:'Posters A3, 20 stuks (bieb, supermarkt, Sluisfabriek)',cost:20,prio:2,lead:4,src:'Drukwerkdeal'},
+  {id:'tafelkleed',sc:'beurs',name:'Bedrukt tafelkleed of textieldoek',cost:45,prio:6,lead:6,src:'Drukwerkdeal'},
+  {id:'shirts',sc:'beurs',name:'Herkenbare shirts voor vrijwilligers, 6 stuks',cost:60,prio:7,lead:6,src:'Textieldrukker'},
+  {id:'stickers',sc:'beurs',name:'Stickers "Zelf gemaakt bij de DHC", 250 stuks',cost:25,prio:8,lead:5,src:'Drukwerkdeal'},
+  {id:'balie',sc:'beurs',name:'Re-board beursbalie, bedrukt',cost:109,prio:10,lead:6,src:'Drukwerkdeal'},
+  {id:'wand',sc:'beurs',name:'Textiel beurswand 3×2,25 m',cost:250,prio:12,lead:7,src:'Drukwerkdeal'},
+  {id:'borden',sc:'opendag',name:'Bewegwijzering Sluisfabriek naar de club, 4 borden',cost:48,req:true,lead:5,src:'Drukwerkdeal'},
+  {id:'rondleiding',sc:'opendag',name:'Rondleidingskaart van de werkplaats (A4, zelf printen)',cost:5,req:true,src:'Zelf (code)'},
+  {id:'koffieclub',sc:'opendag',name:'Koffie en koek in de kantine',cost:25,req:true,src:'Zelf'},
+  {id:'vlag',sc:'opendag',name:'Beachflag bij de ingang van de club',cost:60,prio:3,lead:2,src:'Drukwerkdeal'},
+  {id:'spandoek',sc:'opendag',name:'Spandoek aan de gevel "Vandaag open"',cost:35,prio:5,lead:5,src:'Drukwerkdeal'},
+  {id:'wsmat',sc:'workshops',name:'Materiaal mini-workshops (hout en metaal)',cost:60,req:true,src:'Bouwmarkt'},
+  {id:'wsppe',sc:'workshops',name:'Extra veiligheidsbrillen en gehoorbescherming',cost:30,req:true,src:'Bouwmarkt'},
+  {id:'wscert',sc:'workshops',name:'Label "Zelf gemaakt" voor elk werkstuk',cost:10,prio:9,lead:4,src:'Drukwerkdeal'},
+  {id:'video',sc:'online',name:'3 tot 5 korte video\'s in TikTok- of Reels-stijl',cost:0,req:true,src:'Zelf filmen'},
+  {id:'pers',sc:'online',name:'Persbericht voor lokale media',cost:0,req:true,src:'Zelf'},
+  {id:'ads',sc:'online',name:'Lokale social-advertentie, 10 dagen, 15 km rond Drachten',cost:75,prio:4,src:'Meta Ads'},
+  {id:'krant',sc:'online',name:'Advertentie in een lokale krant',cost:150,prio:11,lead:7,src:'Lokale krant'},
+];
+const THEMES = [
+  {id:'scroll',tag:'Leg die telefoon weg.',name:'Handen in plaats van scrollen',
+   pitch:'Een uur scrollen levert niks op. In dat uur had je ook je banden kunnen wisselen.',
+   head:['Een uur scrollen','<em>of</em> zelf je banden','wisselen?'],
+   ideas:['Splitscreen-video: links iemand die scrollt, rechts een lid dat in dezelfde 60 seconden een wiel wisselt.','"Schermtijd-rapport": je telefoon zegt 4 uur per dag. Wat had je kunnen maken?','Op de stand: zet je telefoon in het bakje, pak een vijl.']},
+  {id:'reken',tag:'Reken maar uit.',name:'De rekensom',
+   pitch:'Bij de verhuurwerkplaats betaal je per kwartier. Bij de DHC betaal je € 85 per jaar.',
+   head:['Autobrug huren?','€ 30 <em>per uur.</em>','Bij ons: € 85 per jaar.'],
+   ideas:['Kassabon-video: de bon van de garage rolt eindeloos door, daarna één bonnetje van € 85.','Rekenmachine op de stand: bezoekers vullen in wat ze per jaar klussen.','"Na 3 uur autobrug heb je je contributie al terugverdiend."']},
+  {id:'tiktok',tag:'POV: je kunt het zelf.',name:'TikTok-stijl',
+   pitch:'Snelle, eerlijke filmpjes uit de werkplaats, gemaakt door de leden zelf.',
+   head:['POV:','je last je <em>eerste</em>','naad.'],
+   ideas:['"POV: je 78-jarige buurman leert je TIG-lassen." Jong en oud samen.','Satisfying-reeks: draaibankkrul, schuurband, vonken van de slijptol.','"Wat kost dit bij de garage?" Raad de prijs, en laat zien hoe het zelf moet.']},
+  {id:'sinds',tag:'Sinds 1957.',name:'Generaties makers',
+   pitch:'Bijna 70 jaar kennis en gereedschap. Nu op zoek naar de volgende generatie.',
+   head:['Sinds 1957','gereedschap,','<em>jouw</em> beurt.'],
+   ideas:['Portretten: een lid van het eerste uur naast een nieuw jong lid, met hetzelfde gereedschap.','"Deze draaibank is ouder dan je vader en werkt nog steeds."','Leerling-meester-koppels op de stand.']},
+];
+const DECISIONS = [
+  {id:'opendag',q:'Gaat de werkplaats op 28 oktober open voor publiek?',p:'Kost vrijwilligers en bewegwijzering, maar bezoekers zien dan het echte werk.'},
+  {id:'workshops',q:'Bieden we mini-workshops aan voor niet-leden?',p:'Eerst nagaan of de verzekering dit dekt en wie toezicht houdt bij de machines.'},
+  {id:'actie',q:'Beursactie: wie op 28 oktober lid wordt, betaalt de rest van 2026 niets?',p:'Kost de club vrijwel niets en geeft een reden om direct te tekenen.'},
+  {id:'proef',q:'Geven we geïnteresseerden een gratis proefavond?',p:'Een lage drempel voor wie nog twijfelt. Zet een vaste datum vast, bijvoorbeeld 4 november.'},
+  {id:'online',q:'Mogen aanmeldingen online binnenkomen?',p:'Dan moet iemand van de ledenadministratie ze verwerken.'},
+  {id:'budget',q:'Geven we het voorgestelde budget vrij?',p:'Het bedrag volgt de schuifbalk in de planner.'},
+  {id:'thema',q:'Kiezen we het voorgestelde campagnethema?',p:'Het thema bepaalt de toon van alle materialen.'},
+];
+const DEFAULT_STATE = {
+  v:1, budget:300, vol:6,
+  sc:{beurs:true,opendag:true,workshops:false,online:true},
+  theme:'reken', ov:{}, price:{}, dec:{},
+  cmp:{brug:8,dagen:6,app:2},
+  notes:''
+};
+
+/* ---------- Status & opslag ---------- */
+let S = structuredClone(DEFAULT_STATE);
+let tab = 'overzicht';
+try{ const t = localStorage.getItem('dhc-tab'); if(t) tab = t; }catch(e){}
+let db=null, ref=null, lastSaved='', saveTimer=null, saving=false, pending=false, canWrite=true;
+const $ = s => document.querySelector(s);
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const eur = n => '€ ' + Math.round(n).toLocaleString('nl-NL');
+function merge(o){ const d=structuredClone(DEFAULT_STATE); if(!o||typeof o!=='object') return d;
+  for(const k of Object.keys(d)){ if(o[k]!==undefined){ d[k] = (typeof d[k]==='object'&&d[k]&&!Array.isArray(d[k])) ? {...d[k],...o[k]} : o[k]; } } return d; }
+function setSync(t){ $('#syncState').textContent=t; }
+
+function scheduleSave(){
+  try{ localStorage.setItem('dhc-plan', JSON.stringify(S)); }catch(e){}
+  if(!ref||!canWrite){ if(!ref) setSync('Opgeslagen in deze browser.'); return; }
+  clearTimeout(saveTimer); setSync('Wijzigingen opslaan…');
+  saveTimer = setTimeout(flush, 700);
+}
+async function flush(){
+  if(saving){ pending=true; return; }
+  const body = JSON.stringify(S); if(body===lastSaved){ setSync('Opgeslagen en gedeeld.'); return; }
+  saving=true;
+  try{ await ref.set({state:S, updated:new Date().toISOString()}); lastSaved=body; setSync('Opgeslagen en gedeeld met iedereen die deze pagina opent.'); }
+  catch(e){ canWrite=false; setSync('Je kunt dit plan bekijken, maar niet wijzigen. Wijzigingen blijven alleen in deze browser.'); }
+  saving=false; if(pending){ pending=false; flush(); }
+}
+async function connect(){
+  try{ const t=localStorage.getItem('dhc-plan'); if(t) S=merge(JSON.parse(t)); }catch(e){}
+  renderAll();
+  if(!window.claude?.use){ setSync('Opgeslagen in deze browser.'); return; }
+  try{ db = await window.claude.use('db'); }catch(e){ db=null; }
+  if(!db){ setSync('Opgeslagen in deze browser.'); return; }
+  ref = db.doc('plan/main');
+  ref.onSnapshot(snap=>{
+    if(snap.metadata?.hasPendingWrites) return;
+    if(snap.exists){ const st=snap.data()?.state; const body=JSON.stringify(st);
+      if(st && body!==JSON.stringify(S)){ S=merge(st); lastSaved=JSON.stringify(S); renderAll(); }
+      else lastSaved=body;
+      setSync('Gedeeld plan, live bijgewerkt.');
+    } else setSync('Demodata. Je eerste wijziging maakt het gedeelde plan aan.');
+  }, ()=>setSync('Verbinding met het gedeelde plan verbroken. Wijzigingen blijven in deze browser.'));
+}
+function change(fn){ fn(); renderAll(); scheduleSave(); }
+
+/* ---------- Berekeningen ---------- */
+function active(sc){ return sc==='beurs' || (sc==='workshops' ? (S.sc.opendag&&S.sc.workshops) : !!S.sc[sc]); }
+function cost(it){ return S.price[it.id]!=null ? +S.price[it.id] : it.cost; }
+function plan(budget = S.budget, sc = null){
+  const isOn = sc ? (k => k==='beurs' || (k==='workshops'? sc.opendag&&sc.workshops : !!sc[k])) : active;
+  const items = CATALOG.filter(i=>isOn(i.sc));
+  const chosen = new Set(); let total=0, min=0;
+  for(const i of items){ if(i.req){ min+=cost(i); if(S.ov[i.id]!==false){ chosen.add(i.id); total+=cost(i);} } }
+  const opt = items.filter(i=>!i.req).sort((a,b)=>a.prio-b.prio);
+  for(const i of opt){ if(S.ov[i.id]===true){ chosen.add(i.id); total+=cost(i);} }
+  for(const i of opt){ if(S.ov[i.id]===undefined && total+cost(i)<=budget){ chosen.add(i.id); total+=cost(i);} }
+  const max = items.reduce((s,i)=>s+cost(i),0);
+  return {items, chosen, total, min, max};
+}
+function volNeeded(sc=S.sc){
+  const r=[{k:'Stand Sluisfabriek (2 diensten × 2)',n:4},{k:'Opbouw en afbouw',n:2}];
+  if(sc.opendag) r.push({k:'Open Dag (2 diensten × 3: ontvangst, rondleiding, machinedemo)',n:6});
+  if(sc.opendag&&sc.workshops) r.push({k:'Workshopbegeleiding (2 diensten × 2)',n:4});
+  if(sc.online) r.push({k:'Filmen en posten vooraf',n:1});
+  return {rows:r,total:r.reduce((s,x)=>s+x.n,0)};
+}
+function cmpCost(){ const c=S.cmp; return c.brug*30 + c.dagen*7.5 + c.dagen*c.app*3; }
+function daysLeft(){ const now=new Date(); const a=new Date(now.getFullYear(),now.getMonth(),now.getDate()); return Math.max(0,Math.round((new Date(2026,9,28)-a)/864e5)); }
+function fmtDate(d){ return d.toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'}); }
+function orderBy(it){ const d=new Date(2026,9,28); d.setDate(d.getDate()-(it.lead+3)); return d; }
+
+/* ---------- Logo (vector, kleurt mee met de tekst) ---------- */
+const LOGO_D='M0 0H100A420.5 420.5 0 0 1 482 244.73V596.27A420.5 420.5 0 0 1 100 841H0Z M0 199H126A203 203 0 0 1 126 605H0Z M482 0h39V841h-39Z M675 0h152v320H675ZM675 521h152v320H675Z M1502 0H1402A420.5 420.5 0 0 0 1020 244.73V596.27A420.5 420.5 0 0 0 1402 841H1502Z M1502 199H1376A203 203 0 0 0 1376 605H1502Z M981 0h39V841h-39Z';
+const logo = cls => `<svg class="${cls}" viewBox="0 0 1502 841" role="img" aria-label="DHC"><path fill="currentColor" fill-rule="evenodd" d="${LOGO_D}"/></svg>`;
+
+/* ---------- Isometrische tekeningen (alles is code) ---------- */
+const C30=Math.cos(Math.PI/6), S30=0.5;
+function P(x,y,z,s){ return [ (x-y)*C30*s, (x+y)*S30*s - z*s ]; }
+function box(x,y,z,w,d,h,c,s){
+  const pt=(a,b,e)=>P(a,b,e,s).map(n=>n.toFixed(1)).join(',');
+  const top=[pt(x,y,z+h),pt(x+w,y,z+h),pt(x+w,y+d,z+h),pt(x,y+d,z+h)];
+  const left=[pt(x,y+d,z),pt(x+w,y+d,z),pt(x+w,y+d,z+h),pt(x,y+d,z+h)];
+  const right=[pt(x+w,y,z),pt(x+w,y+d,z),pt(x+w,y+d,z+h),pt(x+w,y,z+h)];
+  return `<g><polygon points="${left.join(' ')}" fill="var(--${c}2)"/><polygon points="${right.join(' ')}" fill="var(--${c}3)"/><polygon points="${top.join(' ')}" fill="var(--${c}1)"/></g>`;
+}
+function scene(boxes, s, vb){
+  boxes.sort((a,b)=>(a[0]+a[1]+a[2]) - (b[0]+b[1]+b[2]) || a[2]-b[2]);
+  return `<svg class="iso" viewBox="${vb}" role="img" aria-label="Isometrische tekening van de werkplaats">${boxes.map(b=>box(...b,s)).join('')}</svg>`;
+}
+function workshopScene(){
+  const B=[];
+  B.push([0,0,0,12,9,.3,'s']);                      // vloer
+  // autobrug: twee kolommen + armen + auto
+  B.push([1,1,.3,.5,.5,4.4,'y']); B.push([1,5.5,.3,.5,.5,4.4,'y']);
+  B.push([1.5,1.2,2.6,4.2,.3,.25,'y']); B.push([1.5,5.6,2.6,4.2,.3,.25,'y']);
+  B.push([1.8,1.6,2.85,4.2,3.9,1.0,'r']);            // carrosserie
+  B.push([2.6,2.0,3.85,2.4,3.1,.8,'r']);             // cabine
+  B.push([2.1,1.3,2.9,.9,.35,.9,'d']); B.push([4.6,1.3,2.9,.9,.35,.9,'d']);
+  B.push([2.1,5.45,2.9,.9,.35,.9,'d']); B.push([4.6,5.45,2.9,.9,.35,.9,'d']);
+  // werkbank met bankschroef
+  B.push([8,1,.3,3,1.4,1.6,'g']); B.push([9.6,1.3,1.9,.6,.6,.45,'d']);
+  // kolomboormachine
+  B.push([8.6,5,.3,1.3,1.3,.3,'d']); B.push([9.05,5.45,.6,.35,.35,3.2,'s']); B.push([8.8,5.2,3.3,1.1,1.0,.8,'g']);
+  // gereedschapskist
+  B.push([8.3,7.3,.3,1.6,1.2,1.4,'r']); B.push([8.3,7.3,1.7,1.6,1.2,.15,'d']);
+  return scene(B,22,'-215 -70 450 340');
+}
+function routeScene(){
+  const B=[];
+  B.push([0,0,0,16,6,.2,'s']);
+  B.push([1,1,.2,4,4,3.2,'g']); B.push([1.4,1.4,3.4,3.2,3.2,.4,'g']);   // Sluisfabriek
+  B.push([11,1,.2,4,4,2.2,'y']); B.push([11,1,2.4,4,4,.25,'d']);       // DHC
+  for(let i=0;i<5;i++) B.push([5.6+i*1.05,2.7,.2,.6,.6,.06,'d']);       // looproute
+  return scene(B,16,'-110 -60 380 230');
+}
+function mini(kind){
+  const B=[[0,0,0,6,6,.2,'s']];
+  if(kind==='scroll'){ B.push([1,1,.2,1.6,3,.25,'d']); B.push([3.5,2,.2,1.2,1.2,1.2,'d']); B.push([3.3,1.8,1.4,1.6,1.6,.3,'y']); }
+  if(kind==='reken'){ B.push([1,1,.2,2.4,3.2,.5,'s']); for(let i=0;i<3;i++) B.push([1.2+i*.75,1.3,.7,.5,.5,.12,'y']); B.push([4,1.5,.2,1,1,2.6,'g']); }
+  if(kind==='tiktok'){ B.push([1.5,1.5,.2,1.8,1,3,'d']); B.push([1.6,1.6,3.2,1.6,.8,.1,'r']); B.push([4,3,.2,1,1,1,'y']); }
+  if(kind==='sinds'){ B.push([.8,1,.2,4.2,1.3,1.2,'g']); B.push([1,1.2,1.4,1.2,.9,.7,'d']); B.push([3.8,1.2,1.4,1,.9,.4,'d']); }
+  return scene(B,12,'-80 -30 160 120');
+}
+
+/* ---------- Weergave ---------- */
+function renderControls(){
+  const p=plan(); const minB=p.min;
+  $('#budget').value=S.budget; $('#budgetNum').textContent=eur(S.budget);
+  $('#minNum').textContent=eur(minB); $('#usedNum').textContent=eur(p.total);
+  $('#trackMin').style.width=Math.min(100,minB/2000*100)+'%';
+  $('#trackUsed').style.width=Math.min(100,p.total/2000*100)+'%';
+  const tier = S.budget<minB ? 'Onder minimum' : p.total>=p.max ? 'Compleet' : S.budget<minB+150 ? 'Basis' : 'Plus';
+  const chip=$('#tierChip'); chip.textContent=tier; chip.className='chip '+(S.budget<minB?'bad':tier==='Compleet'?'good':'muted');
+  for(const k of ['opendag','workshops','online']){ const el=$('#sc-'+k); el.checked=!!S.sc[k]; }
+  $('#sc-workshops').disabled=!S.sc.opendag;
+  $('#vol').value=S.vol; $('#volNum').textContent=S.vol;
+  const v=volNeeded(); $('#volNeed').textContent=v.total;
+  const gap=S.vol-v.total;
+  $('#volChip').innerHTML = gap>=0 ? `<span class="chip good">Genoeg mensen${gap>0?`, ${gap} reserve`:''}</span>` : `<span class="chip bad">Tekort: ${-gap} vrijwilliger${gap===-1?'':'s'}</span>`;
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  $('#daysLeft').textContent=daysLeft();
+}
+
+function vOverzicht(){
+  const p=plan(), v=volNeeded(), th=THEMES.find(t=>t.id===S.theme)||THEMES[0];
+  const onSc = Object.keys(SCEN).filter(active).map(k=>SCEN[k].name);
+  const nPrint = [...p.chosen].filter(id=>CATALOG.find(c=>c.id===id).lead).length;
+  const firstOrder = [...p.chosen].map(id=>CATALOG.find(c=>c.id===id)).filter(i=>i.lead).map(orderBy).sort((a,b)=>a-b)[0];
+  return `
+  <div class="demo"><b>Demodata.</b> Prijzen zijn richtprijzen exclusief btw en aantallen zijn schattingen. Pas ze aan onder Materialen &amp; kosten zodra je echte offertes hebt.</div>
+  <div class="hero">
+    <div>
+      <div class="label">Woensdag 28 oktober 2026 · 13.00–17.00</div>
+      <h2 style="margin-top:6px">Voor het eerst naar buiten met de Drachtster Hobby Club</h2>
+      <p class="lead">De stand staat in De Sluisfabriek op Tussendiepen 6, tussen robotdemo's, het Repaircafé en het MakerLab. De werkplaats van de club ligt in dezelfde straat, op nummer 57. Precies het publiek dat nieuwsgierig is naar maken en techniek.</p>
+    </div>
+    <div>${workshopScene()}</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="v mono">${eur(p.total)}</div><div class="k">ingepland van ${eur(S.budget)}</div></div>
+    <div class="stat"><div class="v">${p.chosen.size}</div><div class="k">materialen en acties</div></div>
+    <div class="stat"><div class="v">${v.total}</div><div class="k">vrijwilligers nodig (${S.vol} beschikbaar)</div></div>
+    <div class="stat"><div class="v">${firstOrder?fmtDate(firstOrder):'–'}</div><div class="k">eerste bestelling uiterlijk (${nPrint} drukwerkitems)</div></div>
+  </div>
+  <div class="cols">
+    <div class="box"><div class="label">Het plan nu</div>
+      <ul class="clean" style="margin-top:10px">${onSc.map(s=>`<li><span class="tick">✓</span><span>${esc(s)}</span></li>`).join('')}
+      <li><span class="tick">✓</span><span>Thema: <b>${esc(th.name)}</b>, "${esc(th.tag)}"</span></li></ul>
+    </div>
+    <div class="box"><div class="label">Route op de dag</div>${routeScene()}
+      <p class="note">Links De Sluisfabriek (nr. 6), rechts de club (nr. 57). ${S.sc.opendag?'Met bewegwijzering lopen bezoekers van de stand naar de werkplaats.':'Zet de Open Dag aan om bezoekers door te sturen naar de werkplaats.'} De loopafstand is nog niet nagemeten.</p>
+    </div>
+  </div>
+  ${vCompare(false)}`;
+}
+
+function vCompare(slide){
+  const c=S.cmp, them=cmpCost(), save=them-FEE;
+  return `<div class="compare">
+    <div class="them"><div class="label">Verhuurwerkplaats in Drachten</div>
+      <div class="price mono" style="margin-top:6px">${eur(them)}</div><p class="note">per jaar bij jouw klussen</p>
+      <div class="calc">
+        <label for="c-brug">Uren op de autobrug per jaar <span class="src">(€ 7,50 per kwartier)</span></label><input type="number" min="0" max="200" id="c-brug" value="${c.brug}">
+        <label for="c-dagen">Klusdagen met licht gereedschap <span class="src">(€ 7,50 p.p. per dag)</span></label><input type="number" min="0" max="365" id="c-dagen" value="${c.dagen}">
+        <label for="c-app">Apparaten met stekker per klusdag <span class="src">(€ 2,50–3,50, gerekend € 3)</span></label><input type="number" min="0" max="20" id="c-app" value="${c.app}">
+      </div>
+    </div>
+    <div class="us"><div class="label" style="color:inherit;opacity:.8">Drachtster Hobby Club</div>
+      <div class="price mono" style="margin-top:6px">${eur(FEE)}</div><p>per jaar, contributie 2026</p>
+      <ul class="clean" style="margin-top:12px">
+        <li><span class="tick" style="background:var(--signal);color:var(--signal-ink)">✓</span>Het hele jaar, ook 's avonds en op zaterdag</li>
+        <li><span class="tick" style="background:var(--signal);color:var(--signal-ink)">✓</span>Alle machines inbegrepen: metaal, hout, autobrug, elektronica</li>
+        <li><span class="tick" style="background:var(--signal);color:var(--signal-ink)">✓</span>Koffie en thee, en leden die je verder helpen</li>
+        <li><span class="tick" style="background:var(--signal);color:var(--signal-ink)">✓</span>Geen winstoogmerk: je betaalt alleen de kosten</li>
+      </ul>
+      <p class="save">Je bespaart <b class="mono">${eur(Math.max(0,save))}</b> per jaar.</p>
+    </div>
+  </div>
+  <p class="note">Tarieven van de verhuurwerkplaats zoals aangeleverd door Arjen. Verbruik, stalling en energie worden bij de DHC apart afgerekend.</p>`;
+}
+
+function vMaterialen(){
+  const p=plan(); let html=`<div class="demo"><b>Zo werkt het.</b> Met de budgetschuif kiest de planner automatisch extra's in volgorde van nut. Zet een regel op <i>Aan</i> of <i>Uit</i> om dat te overschrijven, en pas prijzen aan zodra je een offerte hebt.</div>
+  <div class="tablewrap"><table><thead><tr><th>Item</th><th>Bron</th><th>Bestellen vóór</th><th style="text-align:right">Prijs</th><th>Keuze</th></tr></thead><tbody>`;
+  for(const k of Object.keys(SCEN)){
+    const rows=CATALOG.filter(i=>i.sc===k); const on=active(k);
+    const sub=rows.filter(i=>p.chosen.has(i.id)).reduce((s,i)=>s+cost(i),0);
+    html+=`<tr class="group"><td colspan="3">${esc(SCEN[k].name)}${on?'':' <span class="chip muted" style="font-family:var(--font-body)">staat uit</span>'}</td><td class="num">${on?eur(sub):''}</td><td></td></tr>`;
+    for(const i of rows){
+      const sel=on&&p.chosen.has(i.id); const ov=S.ov[i.id];
+      html+=`<tr class="${sel?'':'off'}"><td class="name">${esc(i.name)}${i.req?' <span class="chip muted">basis</span>':''}</td>
+      <td class="src">${esc(i.src)}</td><td class="mono" style="font-size:13px">${i.lead?fmtDate(orderBy(i)):'–'}</td>
+      <td class="num"><input type="number" min="0" step="1" data-price="${i.id}" value="${cost(i)}" aria-label="Prijs ${esc(i.name)}"></td>
+      <td><div class="seg" role="group"><button type="button" data-ov="${i.id}" data-v="auto" class="${ov===undefined?'on':''}">Auto</button><button type="button" data-ov="${i.id}" data-v="on" class="${ov===true?'on':''}">Aan</button><button type="button" data-ov="${i.id}" data-v="off" class="${ov===false?'on':''}">Uit</button></div></td></tr>`;
+    }
+  }
+  html+=`</tbody></table></div>
+  <div class="cols"><div class="box"><div class="label">Totaal ingepland</div><div class="budget-num mono" style="margin-top:6px">${eur(p.total)}</div><p class="note">Minimum basisset ${eur(p.min)} · alles samen ${eur(p.max)}</p></div>
+  <div class="box"><div class="label">Bestellen bij levertijd</div><p class="note" style="margin-top:6px">De datum "bestellen vóór" is de geschatte levertijd plus 3 dagen marge, terugrekenend vanaf 28 oktober. Controleer de echte levertijd bij het bestellen.</p>
+  <p style="margin-top:8px"><a href="https://www.drukwerkdeal.nl/nl/producten/beurspresentatie" target="_blank" rel="noopener">Beurspresentatie bij Drukwerkdeal</a></p></div></div>`;
+  return html;
+}
+
+function vCampagne(){
+  const th=THEMES.find(t=>t.id===S.theme)||THEMES[0];
+  return `<div><div class="label">Kies een thema</div></div>
+  <div class="themes">${THEMES.map(t=>`<button type="button" class="theme ${t.id===S.theme?'on':''}" data-theme-id="${t.id}">
+    <div style="display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center"><div><span class="tag">${esc(t.tag)}</span><br><small>${esc(t.name)}</small></div><div>${mini(t.id)}</div></div>
+    <span>${esc(t.pitch)}</span></button>`).join('')}</div>
+  <div class="flyer">
+    <div class="poster" aria-label="Voorbeeld van de flyer">
+      <div style="display:flex;align-items:center;gap:12px">${logo('plogo')}<div class="label" style="color:var(--signal)">Drachtster Hobby Club<br>sinds 1957</div></div>
+      <div class="ph">${th.head.join('<br>')}</div>
+      <div style="max-width:70%">${workshopScene()}</div>
+      <span class="price-tag">€ 85 per jaar, alles inbegrepen</span>
+      <div class="pfoot"><span>28 okt · Sluisfabriek${S.sc.opendag?' én open werkplaats':''}<br>Tussendiepen 57, Drachten</span><span class="qr" aria-label="Plek voor QR-code"></span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <h3>Ideeën voor ${esc(th.name.toLowerCase())}</h3>
+      <ul class="clean ideas">${th.ideas.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>
+      <p class="note">Het DHC-logo staat nu in de kop, op deze flyer en in de presentatie. De tekeningen blijven code in plaats van foto's, dus een wijziging in de huisstijl gaat overal tegelijk mee.</p>
+    </div>
+  </div>`;
+}
+
+function vLid(){
+  const d=S.dec;
+  const steps=[
+    ['Zien','Flyer, kaartje, poster of video met één QR-code.'],
+    ['Scannen','De QR-code opent een korte aanmeldpagina: naam, e-mail, telefoon en waar je interesse ligt.'],
+    ['Kiezen', d.proef==='nee' ? 'Direct lid worden.' : 'Direct lid worden, of eerst een gratis proefavond.'],
+    ['Bevestigen','Automatische bevestiging met openingstijden, adres en wat je meeneemt.'],
+    ['Welkom','Binnen een week belt of mailt iemand van de club. Op de eerste avond is er een vaste begeleider.'],
+  ];
+  return `<div class="box"><div class="label">Van bezoeker naar lid</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:12px">
+    ${steps.map((s,i)=>`<div><div class="mono" style="color:var(--machine);font-weight:600">Stap ${i+1}</div><b>${s[0]}</b><p class="note">${s[1]}</p></div>`).join('')}</div></div>
+  <div class="cols">
+    <div class="box"><div class="label">Wat je krijgt voor € 85 per jaar</div>
+      <ul class="clean" style="margin-top:10px">
+        <li><span class="tick">✓</span>Metaal: draaibanken, frees, zaagbanken, straalkast, lassen (MIG, MAG, TIG)</li>
+        <li><span class="tick">✓</span>Hout: draaibank, vandiktebank, lintzaag, cirkelzaag, schuurband</li>
+        <li><span class="tick">✓</span>Autowerkplaats met brug en diagnoseapparatuur</li>
+        <li><span class="tick">✓</span>Elektronica en kleine reparaties</li>
+        <li><span class="tick">✓</span>Buitenwerkplek of stalling te huur, bijvoorbeeld voor boot of camper</li>
+        <li><span class="tick">✓</span>Zes dagen per week open, ook 's avonds</li>
+      </ul><p class="note" style="margin-top:8px">Lid vanaf 16 jaar. Verbruik, stalling en energie apart.</p></div>
+    <div class="box"><div class="label">Drempels weghalen</div>
+      <ul class="clean" style="margin-top:10px">
+        <li><span class="chip ${d.actie==='ja'?'good':d.actie==='nee'?'bad':'muted'}">${d.actie==='ja'?'Ja':d.actie==='nee'?'Nee':'Open'}</span><span>Rest van 2026 gratis bij inschrijving op 28 oktober</span></li>
+        <li><span class="chip ${d.proef==='ja'?'good':d.proef==='nee'?'bad':'muted'}">${d.proef==='ja'?'Ja':d.proef==='nee'?'Nee':'Open'}</span><span>Gratis proefavond voor twijfelaars</span></li>
+        <li><span class="chip ${d.online==='ja'?'good':d.online==='nee'?'bad':'muted'}">${d.online==='ja'?'Ja':d.online==='nee'?'Nee':'Open'}</span><span>Online aanmelden, verwerkt door de ledenadministratie</span></li>
+      </ul><p class="note" style="margin-top:8px">Deze punten beslist het bestuur onder Beslispunten.</p></div>
+  </div>
+  <div class="box"><div class="label">Volgende module</div><p style="margin-top:6px">De aanmeldpagina zelf bouwen we als aparte module, zodat de QR-code op al het drukwerk ernaar kan verwijzen. Het adres moet vastliggen voordat het drukwerk de deur uit gaat.</p></div>`;
+}
+
+function vDraaiboek(){
+  const p=plan(); const today=new Date(); today.setHours(0,0,0,0);
+  const ord = {}; for(const id of p.chosen){ const i=CATALOG.find(c=>c.id===id); if(i.lead){ const d=orderBy(i); const k=d.toISOString().slice(0,10); (ord[k]=ord[k]||{d,items:[]}).items.push(i.name); } }
+  const ms=[
+    {d:new Date(2026,9,17),t:'Plan voorleggen aan het bestuur',x:'Presentatiemodus van deze planner.'},
+    {d:new Date(2026,9,19),t:'Bestuur beslist',x:'Budget, Open Dag, workshops, beursactie en thema.'},
+    {d:new Date(2026,9,19),t:'Vrijwilligers werven',x:`${volNeeded().total} mensen nodig. Rooster rondsturen.`},
+    {d:new Date(2026,9,20),t:'Aanmeldpagina en QR-code live',x:'Moet klaar zijn voordat het drukwerk wordt besteld.'},
+    ...Object.values(ord).map(o=>({d:o.d,t:'Bestellen',x:o.items.join(' · ')})),
+    ...(S.sc.online?[{d:new Date(2026,9,21),t:'Online campagne start',x:'Eerste video en persbericht. Advertentie loopt 10 dagen.'}]:[]),
+    {d:new Date(2026,9,23),t:'Briefing vrijwilligers',x:'Gesprekstips, veelgestelde vragen en het rooster.'},
+    {d:new Date(2026,9,26),t:'Generale repetitie',x:'Presentatie op het scherm testen, drukwerk binnen, spullen klaarzetten.'},
+    {d:new Date(2026,9,28),t:'Drachten Maakt \'t',x:'Zie het dagschema hieronder.'},
+    {d:new Date(2026,9,29),t:'Opvolging aanmeldingen',x:'Iedereen binnen een week bellen of mailen.'},
+    ...(S.dec.proef!=='nee'?[{d:new Date(2026,10,4),t:'Proefavond',x:'Vaste begeleider per nieuwe bezoeker.'}]:[]),
+  ].sort((a,b)=>a.d-b.d);
+  const day=[
+    ['11.30','beurs','Opbouw stand: roll-up, scherm, tafel, werkstukken'],
+    ...(S.sc.opendag?[['12.00','club','Bewegwijzering plaatsen, werkplaats opgeruimd en veilig']]:[]),
+    ['13.00','beurs','Deuren open. Dienst 1 op de stand'],
+    ...(S.sc.opendag?[['13.00','club','Open Dag: ontvangst, rondleidingen, machines in bedrijf']]:[]),
+    ...(S.sc.opendag&&S.sc.workshops?[['13.30','club','Mini-workshop elk half uur, maximaal 4 deelnemers']]:[]),
+    ['15.00','beurs','Wissel naar dienst 2'],
+    ['17.00','beurs','Einde. Afbouw en aanmeldingen tellen'],
+    ...(S.sc.opendag?[['17.00','club','Werkplaats dicht, borden ophalen']]:[]),
+  ];
+  return `<div class="cols"><div class="box"><div class="label">Planning tot en met de beurs</div><div class="timeline" style="margin-top:14px">
+    ${ms.map(m=>{const cls=m.d<today?'past':(m.d-today)<2*864e5?'due':'';return `<div class="ms ${cls}"><span class="d">${fmtDate(m.d)}</span><b>${esc(m.t)}</b><span class="items">${esc(m.x)}</span></div>`;}).join('')}
+  </div></div>
+  <div style="display:flex;flex-direction:column;gap:20px">
+    <div class="box"><div class="label">Dagschema 28 oktober</div><div class="day" style="margin-top:12px">
+      ${day.map(r=>`<span class="t">${r[0]}</span><span><span class="where ${r[1]==='club'?'club':''}">${r[1]==='club'?'CLUB':'STAND'}</span>${esc(r[2])}</span>`).join('')}</div></div>
+    <div class="box"><div class="label">Vrijwilligers</div><ul class="clean" style="margin-top:10px">${volNeeded().rows.map(r=>`<li><b class="mono" style="min-width:2ch">${r.n}</b><span>${esc(r.k)}</span></li>`).join('')}</ul></div>
+  </div></div>`;
+}
+
+function decList(){
+  return `<div class="dec">${DECISIONS.map(d=>{const v=S.dec[d.id];
+    let q=d.q; if(d.id==='budget') q=`Geven we ${eur(plan().total)} vrij voor materialen?`; if(d.id==='thema') q=`Kiezen we het thema "${(THEMES.find(t=>t.id===S.theme)||THEMES[0]).name}"?`;
+    return `<div class="dec-item"><div><b>${esc(q)}</b><p>${esc(d.p)}</p></div>
+    <div class="seg" role="group" aria-label="${esc(q)}"><button type="button" class="yes ${v==='ja'?'on':''}" data-dec="${d.id}" data-v="ja">Ja</button><button type="button" class="${!v||v==='open'?'on':''}" data-dec="${d.id}" data-v="open">Open</button><button type="button" class="no ${v==='nee'?'on':''}" data-dec="${d.id}" data-v="nee">Nee</button></div></div>`;}).join('')}</div>`;
+}
+function vBesluiten(){
+  return `${decList()}<div class="box"><label class="label" for="notes">Notities van het bestuur</label><textarea id="notes" style="margin-top:8px" placeholder="Bijvoorbeeld: wie neemt contact op met de verzekeraar over de workshops?">${esc(S.notes)}</textarea></div>`;
+}
+
+const VIEWS={overzicht:vOverzicht,materialen:vMaterialen,campagne:vCampagne,lid:vLid,draaiboek:vDraaiboek,besluiten:vBesluiten};
+function renderPane(){
+  const ae=document.activeElement; const keep = ae&&ae.id&&$('#pane').contains(ae) ? {id:ae.id,s:ae.selectionStart} : null;
+  $('#pane').innerHTML=(VIEWS[tab]||vOverzicht)();
+  if(keep){ const el=document.getElementById(keep.id); if(el){ el.focus(); try{ if(keep.s!=null) el.setSelectionRange(keep.s,keep.s);}catch(e){} } }
+}
+function renderAll(){ renderControls(); if(document.activeElement?.id!=='notes') renderPane(); if(!$('#present').hidden) renderSlide(); }
+
+/* ---------- Presentatie ---------- */
+let slideIx=0;
+function slides(){
+  const p=plan(), v=volNeeded(), th=THEMES.find(t=>t.id===S.theme)||THEMES[0];
+  const combos=[
+    {k:'Alleen de stand',sc:{beurs:true}},
+    {k:'Stand + Open Dag',sc:{beurs:true,opendag:true}},
+    {k:'Stand + Open Dag + workshops',sc:{beurs:true,opendag:true,workshops:true}},
+  ];
+  const curKey = S.sc.opendag ? (S.sc.workshops?2:1) : 0;
+  return [
+    ()=>`<div class="split"><div style="display:flex;flex-direction:column;gap:18px">${logo('slogo')}<div class="label" style="color:var(--signal)">Voorstel aan het bestuur</div><h1>De DHC op <em>Drachten Maakt 't</em></h1><p class="sub">Woensdag 28 oktober, 13.00–17.00, De Sluisfabriek. Voor het eerst stellen we de club voor aan de buitenwereld.</p></div><div>${workshopScene()}</div></div>`,
+    ()=>`<h1>Waarom <em>nu</em></h1><ul><li>Onze leden worden gemiddeld steeds ouder en er komen weinig nieuwe bij.</li><li>Op 28 oktober komt precies het goede publiek naar de Sluisfabriek: mensen die nieuwsgierig zijn naar maken en techniek, met robotdemo's, het Repaircafé en het MakerLab.</li><li>Onze werkplaats ligt in dezelfde straat. Bezoekers kunnen het echte werk zien.</li><li>Nog ${daysLeft()} dagen. Drukwerk heeft levertijd, dus we moeten deze week beslissen.</li></ul>`,
+    ()=>`<h1>Ons sterkste <em>argument</em></h1>${vCompare(true)}`,
+    ()=>`<h1>Drie <em>scenario's</em></h1><div class="grid3">${combos.map((c,i)=>{const pp=plan(S.budget,c.sc);const vv=volNeeded(c.sc);return `<div class="card ${i===curKey?'on':''}"><b>${c.k}</b><span class="v mono">${eur(pp.min)}</span><span>minimaal, tot ${eur(pp.max)} compleet</span><span>${vv.total} vrijwilligers</span>${i===curKey?'<span class="chip" style="color:var(--signal);align-self:flex-start">Voorstel</span>':''}</div>`;}).join('')}</div><p class="sub">${S.sc.online?'Plus de online campagne vooraf, vrijwel zonder kosten.':'Een online campagne vooraf kan er los bij.'}</p>`,
+    ()=>`<div class="split"><div><h1>Het <em>voorstel</em></h1><div class="big mono" style="margin-top:12px">${eur(p.total)}</div><p class="sub">${p.chosen.size} materialen en acties · ${v.total} vrijwilligers (${S.vol} beschikbaar)</p></div><ul>${[...p.chosen].map(id=>CATALOG.find(c=>c.id===id)).filter(i=>cost(i)>0).slice(0,9).map(i=>`<li>${esc(i.name)} <span class="mono" style="opacity:.7">${eur(cost(i))}</span></li>`).join('')}</ul></div>`,
+    ()=>`<div class="split"><div style="display:flex;flex-direction:column;gap:16px"><div class="label" style="color:var(--signal)">Campagnethema</div><h1>${esc(th.tag)}</h1><p class="sub">${esc(th.pitch)}</p></div><div class="poster" style="max-width:340px;background:var(--bg);color:var(--ink)">${logo('plogo')}<div class="ph">${th.head.join('<br>')}</div><div style="max-width:70%">${mini(th.id)}</div><span class="price-tag">€ 85 per jaar</span></div></div>`,
+    ()=>`<h1>Wat we <em>vandaag</em> beslissen</h1>${decList()}`,
+  ];
+}
+function renderSlide(){
+  const ss=slides(); slideIx=Math.max(0,Math.min(ss.length-1,slideIx));
+  $('#stage').innerHTML=`<div class="slide">${ss[slideIx]()}</div>`;
+  $('#dots').innerHTML=ss.map((_,i)=>`<button type="button" aria-label="Dia ${i+1}" class="${i===slideIx?'on':''}" data-dot="${i}"></button>`).join('');
+  $('#pPrev').disabled=slideIx===0; $('#pNext').textContent= slideIx===ss.length-1?'Klaar':'Volgende';
+}
+function openPresent(){ $('#present').hidden=false; slideIx=0; renderSlide(); $('#pNext').focus(); }
+function closePresent(){ $('#present').hidden=true; $('#btnPresent').focus(); }
+
+/* ---------- Events ---------- */
+$('#budget').addEventListener('input',e=>change(()=>S.budget=+e.target.value));
+$('#vol').addEventListener('input',e=>change(()=>S.vol=+e.target.value));
+for(const k of ['opendag','workshops','online']) $('#sc-'+k).addEventListener('change',e=>change(()=>{S.sc[k]=e.target.checked;}));
+$('#tiers').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  change(()=>{const p=plan(); S.budget = b.dataset.tier==='min' ? Math.ceil(p.min/25)*25 : b.dataset.tier==='max' ? Math.min(2000,Math.ceil(p.max/25)*25) : Math.ceil((p.min+(p.max-p.min)*.4)/25)*25;});});
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;tab=b.dataset.tab;try{localStorage.setItem('dhc-tab',tab);}catch(_){}renderControls();renderPane();});
+function onPaneClick(e){
+  const ov=e.target.closest('[data-ov]'); if(ov){ change(()=>{const v=ov.dataset.v; if(v==='auto') delete S.ov[ov.dataset.ov]; else S.ov[ov.dataset.ov]=(v==='on');}); return; }
+  const th=e.target.closest('[data-theme-id]'); if(th){ change(()=>S.theme=th.dataset.themeId); return; }
+  const dc=e.target.closest('[data-dec]'); if(dc){ change(()=>{ S.dec[dc.dataset.dec]=dc.dataset.v; if(dc.dataset.dec==='opendag'&&dc.dataset.v!=='open') S.sc.opendag=dc.dataset.v==='ja'; if(dc.dataset.dec==='workshops'&&dc.dataset.v!=='open') S.sc.workshops=dc.dataset.v==='ja'; }); return; }
+}
+function onPaneInput(e){
+  const t=e.target;
+  if(t.dataset.price){ const n=Math.max(0,+t.value||0); S.price[t.dataset.price]=n; renderControls(); scheduleSave(); return; }
+  if(t.id==='notes'){ S.notes=t.value.slice(0,4000); scheduleSave(); return; }
+  if(t.id&&t.id.startsWith('c-')){ const k=t.id.slice(2); S.cmp[k]=Math.max(0,+t.value||0); scheduleSave();
+    const host=t.closest('.compare'); const wrapEl=host.parentElement; const tmp=document.createElement('div'); tmp.innerHTML=vCompare();
+    host.querySelector('.them .price').textContent=tmp.querySelector('.them .price').textContent;
+    host.querySelector('.save b').textContent=tmp.querySelector('.save b').textContent; }
+}
+$('#pane').addEventListener('click',onPaneClick);
+$('#pane').addEventListener('input',onPaneInput);
+$('#pane').addEventListener('change',e=>{ if(e.target.dataset.price) renderPane(); });
+$('#stage').addEventListener('click',onPaneClick);
+$('#stage').addEventListener('input',onPaneInput);
+$('#btnPresent').addEventListener('click',openPresent);
+$('#pClose').addEventListener('click',closePresent);
+$('#pPrev').addEventListener('click',()=>{slideIx--;renderSlide();});
+$('#pNext').addEventListener('click',()=>{ if(slideIx>=slides().length-1) return closePresent(); slideIx++;renderSlide();});
+$('#dots').addEventListener('click',e=>{const b=e.target.closest('[data-dot]');if(b){slideIx=+b.dataset.dot;renderSlide();}});
+document.addEventListener('keydown',e=>{ if($('#present').hidden) return; if(e.target.matches('input,textarea')) return;
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault(); if(slideIx<slides().length-1){slideIx++;renderSlide();}}
+  if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault(); slideIx--;renderSlide();}
+  if(e.key==='Escape') closePresent(); });
+
+connect();
+</script>

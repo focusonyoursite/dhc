@@ -1,0 +1,499 @@
+<title>DHC Huisstijl</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="/*FAVICON*/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: werkplaatsbord zoals de planner en de studio. Donkere kopbalk met gevarenstreep, daarna secties als panelen op een grijsgroene ondergrond. */
+:root{
+  --bg:#ecece7; --panel:#f8f8f5; --raise:#ffffff; --ink:#2b2828; --muted:#636660; --line:#d4d5ce;
+  --geel:#f2b705; --geel-ink:#1f1a00; --groen:#2d6a52; --papier:#eee8df; --bad:#b3362b; --good:#2f7d4a;
+  --stage:#dcdcd5;
+  --font-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --font-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141414; --panel:#1d1c1c; --raise:#252424; --ink:#efede9; --muted:#a3a29c; --line:#343231;
+  --geel:#ffc928; --geel-ink:#1f1a00; --groen:#4f9b80; --bad:#ef7363; --good:#5cc27f; --stage:#0d0d0d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141414; --panel:#1d1c1c; --raise:#252424; --ink:#efede9; --muted:#a3a29c; --line:#343231;
+  --geel:#ffc928; --geel-ink:#1f1a00; --groen:#4f9b80; --bad:#ef7363; --good:#5cc27f; --stage:#0d0d0d; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:#2b2828}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--geel);outline-offset:2px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto;min-width:0;width:100%}
+.mono{font-family:var(--font-mono)}
+h1,h2,h3{font-family:var(--font-display);font-weight:900;letter-spacing:.01em;line-height:1;margin:0;text-wrap:balance}
+h2{font-size:clamp(30px,4vw,44px);text-transform:uppercase}
+h3{font-size:22px;font-weight:800}
+p{margin:0}
+.label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.note{font-size:13px;color:var(--muted)}
+
+header.top{background:#2b2828;color:#f3f1ec}
+header.top .bar{display:flex;align-items:center;gap:14px 18px;flex-wrap:wrap;padding-block:14px}
+header.top svg{height:30px;width:auto;color:#fff;flex:none}
+header.top b{font-family:var(--font-display);font-weight:900;font-size:28px;letter-spacing:.03em;line-height:1}
+header.top span{font-size:13px;opacity:.75}
+.hazard{height:6px;background:repeating-linear-gradient(135deg,#f2b705 0 14px,#2b2828 14px 28px)}
+
+main{display:flex;flex-direction:column;gap:56px;padding-block:28px 72px}
+section{display:flex;flex-direction:column;gap:18px}
+.sechead{display:flex;flex-direction:column;gap:6px;max-width:68ch}
+.sechead p{color:var(--muted)}
+
+/* Animatie */
+.hero{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:24px;align-items:stretch}
+@media (max-width:860px){.hero{grid-template-columns:minmax(0,1fr)}}
+section,.sechead{min-width:0}
+.seg{flex-wrap:wrap}
+.stagebox{border-radius:6px;overflow:hidden;aspect-ratio:16/10;max-width:100%;background:var(--stage);position:relative}
+.stagebox > div{position:absolute;inset:0}
+.ctrls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:2px;gap:2px}
+.seg button{border:0;background:transparent;padding:6px 11px;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted)}
+.seg button.on{background:var(--ink);color:var(--bg)}
+.btn{border:1px solid var(--line);background:var(--raise);border-radius:5px;padding:7px 13px;font-weight:600;cursor:pointer;font-size:13px;display:inline-flex;gap:6px;align-items:center}
+.btn:hover{border-color:var(--muted)}
+.btn.geel{background:var(--geel);color:var(--geel-ink);border-color:transparent}
+.side{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.steps li{display:grid;grid-template-columns:62px 1fr;gap:10px;font-size:14px}
+.steps .t{font-family:var(--font-mono);font-size:12px;color:var(--muted);padding-top:2px}
+.files{font-family:var(--font-mono);font-size:12px;display:flex;flex-direction:column;gap:3px;overflow-wrap:anywhere}
+
+/* Logo's */
+.variants{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:900px){.variants{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.variants{grid-template-columns:1fr}}
+.var{border:1px solid var(--line);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;background:var(--panel);min-width:0}
+.var .pv{height:170px;display:flex;align-items:center;justify-content:center;padding:22px}
+.var .pv img{max-height:100%;max-width:100%}
+.var .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
+.var .meta div{min-width:0}
+.var .meta b{display:block;font-size:14px}
+.var .meta span{font-family:var(--font-mono);font-size:11px;color:var(--muted);overflow-wrap:anywhere}
+
+/* Regels */
+.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:760px){.rules{grid-template-columns:1fr}}
+.rule{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.rule > svg{width:100%;height:auto;display:block}
+.swatches{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.swatches{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sw{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--raise);cursor:pointer;text-align:left;padding:0}
+.sw i{display:block;height:64px}
+.sw div{padding:8px 10px;display:flex;flex-direction:column;gap:1px}
+.sw b{font-size:13px}
+.sw span{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+.dont{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:620px){.dont{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.dont figure{margin:0;display:flex;flex-direction:column;gap:6px}
+.dont .box{aspect-ratio:4/3;max-width:100%;border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;background:#f8f8f5}
+.dont .box > svg{width:70%;height:auto}
+.dont .box::after{content:"";position:absolute;inset:0;background:linear-gradient(to top right,transparent calc(50% - 1.5px),var(--bad) calc(50% - 1.5px),var(--bad) calc(50% + 1.5px),transparent calc(50% + 1.5px))}
+.dont figcaption{font-size:12px;color:var(--muted)}
+
+
+/* Kleurenmaker */
+.cm{display:grid;grid-template-columns:330px minmax(0,1fr);gap:18px}
+@media (max-width:760px){.cm{grid-template-columns:1fr}}
+.cmprev{border-radius:6px;border:1px solid var(--line);min-height:300px;display:flex;align-items:center;justify-content:center;padding:32px;transition:background .2s}
+.cmprev svg{max-width:100%;max-height:260px;width:auto;height:auto}
+.pick{display:flex;gap:8px;align-items:center}
+.pick input[type=color]{width:44px;height:36px;border:1px solid var(--line);border-radius:5px;background:var(--raise);padding:2px;cursor:pointer;flex:none}
+.pick input[type=text]{width:100%;min-width:0;border:1px solid var(--line);border-radius:5px;padding:7px 9px;background:var(--raise);font-family:var(--font-mono);font-size:13px;text-transform:uppercase}
+.dots{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.dots button{width:26px;height:26px;border-radius:50%;border:1px solid rgba(0,0,0,.18);cursor:pointer;padding:0}
+.contrast{font-size:13px;font-weight:600;display:flex;gap:8px;align-items:center}
+.contrast i{font-style:normal;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+.contrast .ok{color:var(--good)} .contrast .meh{color:#b07a00} .contrast .bad{color:var(--bad)}
+
+/* Patroonmaker */
+.patmaker{display:grid;grid-template-columns:280px minmax(0,1fr);gap:18px}
+@media (max-width:760px){.patmaker{grid-template-columns:1fr}}
+.patctl{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.patctl label.l{font-size:12px;font-weight:600;display:block;margin-bottom:6px}
+.patctl input[type=range]{width:100%;accent-color:var(--ink)}
+.patprev{border-radius:6px;overflow:hidden;min-height:320px;border:1px solid var(--line)}
+.patprev > svg{display:block;width:100%;height:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--raise);border-radius:999px;padding:4px 11px 4px 6px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.chip i{width:16px;height:16px;border-radius:50%;border:1px solid rgba(0,0,0,.2)}
+.chip.on{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+
+/* Mockups */
+.mocks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:900px){.mocks{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.mocks{grid-template-columns:1fr}}
+.mock{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.mock .art{background:var(--stage);aspect-ratio:1/1;max-width:100%;display:flex;align-items:center;justify-content:center}
+.mock .art > svg{width:100%;height:100%;display:block}
+.mock .txt{padding:14px;display:flex;flex-direction:column;gap:6px}
+.mock .txt p{font-size:14px}
+.mock .txt .note{font-family:var(--font-mono);font-size:11px}
+.mock.wide{grid-column:1 / -1}
+.mock.wide .art{aspect-ratio:2.4/1}
+
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+td.f{font-family:var(--font-mono);font-size:12px;white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:5px;font-size:13px;font-weight:600;z-index:20}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="dhc" viewBox="0 0 1502 841"><path fill="currentColor" fill-rule="evenodd" d="/*PATH*/"/></symbol></svg>
+
+<header class="top">
+  <div class="bar gut wrap">
+    <svg viewBox="0 0 1502 841" role="img" aria-label="DHC"><use href="#dhc"/></svg>
+    <b>HUISSTIJL</b><span>Drachtster Hobby Club · werkplaats sinds 1957</span><a href="https://claude.ai/artifact/N5PmKaKG1eijhSRrHnAhhz" target="_blank" rel="noopener" style="margin-left:auto;color:#f2b705;font-weight:700;font-size:14px;text-decoration:none">Naar de beurskit →</a>
+  </div>
+  <div class="hazard"></div>
+</header>
+
+<main class="gut">
+<div class="wrap" style="display:flex;flex-direction:column;gap:56px">
+
+<section aria-labelledby="h-anim">
+  <div class="sechead"><div class="label">Logo-animatie</div><h2 id="h-anim">In de werkplaats gemaakt</h2>
+    <p>Het logo bouwt zichzelf op zoals je in de werkplaats iets maakt. Gebruik hem als opener of afsluiter van video's, op het scherm op de stand en bij elke social-post met beweging.</p></div>
+  <div class="hero">
+    <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+      <div class="stagebox"><div id="stage"></div></div>
+      <div class="ctrls">
+        <div class="seg" id="thm" role="group" aria-label="Kleur"><button type="button" data-v="licht" class="on">Licht</button><button type="button" data-v="donker">Donker</button><button type="button" data-v="geel">Geel</button><button type="button" data-v="groen">Groen</button></div>
+        <div class="seg" id="lay" role="group" aria-label="Opbouw"><button type="button" data-v="liggend" class="on">Liggend</button><button type="button" data-v="staand">Staand</button></div>
+        <button class="btn geel" type="button" id="replay">Opnieuw afspelen</button>
+      </div>
+    </div>
+    <div class="side">
+      <ol class="steps">
+        <li><span class="t">0,2 s</span><span>De twee H-blokken klemmen naar elkaar toe, als de bekken van een bankschroef.</span></li>
+        <li><span class="t">0,5 s</span><span>De dunne staven schuiven erin als stafmateriaal.</span></li>
+        <li><span class="t">1,0 s</span><span>De bogen van de D en de C worden gedraaid, met vonken op de beitel.</span></li>
+        <li><span class="t">2,4 s</span><span>Het geheel zet zich met een korte klap, als een stempel.</span></li>
+        <li><span class="t">2,6 s</span><span>De naam verschijnt met één strakke veeg.</span></li>
+      </ol>
+      <div><div class="label" style="margin-bottom:6px">Als video in de projectmap</div>
+        <div class="files"><span>huisstijl/animatie/dhc-logo-animatie-16x9-donker.mp4</span><span>huisstijl/animatie/dhc-logo-animatie-9x16-donker.mp4</span><span>huisstijl/animatie/dhc-logo-animatie-1x1-licht.mp4</span><span>huisstijl/animatie/dhc-logo-animatie-1x1-donker.mp4</span><span>huisstijl/animatie/dhc-logo-animatie-480.gif</span></div></div>
+      <p class="note">De vijf productfilms hebben nu ook een versie die eindigt met deze animatie, in productfilms/met-logo/.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-var">
+  <div class="sechead"><div class="label">Logovarianten</div><h2 id="h-var">Eén merk, zes vormen</h2>
+    <p>Het beeldmerk is opnieuw getekend als vector, dus het blijft scherp van een favicon tot een spandoek. Kopieer de SVG voor een ontwerp, of pak het bestand uit de map huisstijl.</p></div>
+  <div class="variants" id="variants"></div>
+</section>
+
+<section aria-labelledby="h-kleur">
+  <div class="sechead"><div class="label">Kleurenmaker</div><h2 id="h-kleur">Het logo in elke kleur</h2>
+    <p>Kies een kleur voor het logo en voor de ondergrond, bijvoorbeeld de kleur van een shirt, een tas of de huisstijl van een partner. De maker controleert of het contrast genoeg is en geeft je de SVG of PNG om mee te werken.</p></div>
+  <div class="cm">
+    <div class="patctl">
+      <div><label class="l">Vorm</label><div class="seg" id="cVar" role="group" aria-label="Vorm"><button type="button" data-v="beeldmerk" class="on">Beeldmerk</button><button type="button" data-v="liggend">Liggend</button><button type="button" data-v="staand">Staand</button><button type="button" data-v="icoon">Icoon</button></div></div>
+      <div><label class="l" for="cFgT">Kleur logo</label><div class="pick"><input type="color" id="cFg" value="#2b2828" aria-label="Kleur logo kiezen"><input type="text" id="cFgT" value="#2B2828" maxlength="7"></div><div class="dots" id="cFgDots"></div></div>
+      <div><label class="l" for="cBgT">Ondergrond</label><div class="pick"><input type="color" id="cBg" value="#f2b705" aria-label="Ondergrond kiezen"><input type="text" id="cBgT" value="#F2B705" maxlength="7"></div><div class="dots" id="cBgDots"></div></div>
+      <label style="display:flex;gap:8px;align-items:center;font-size:13px;cursor:pointer"><input type="checkbox" id="cTr" style="accent-color:var(--ink);width:16px;height:16px"> Transparante ondergrond in het bestand</label>
+      <div class="contrast" id="cCon"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn" type="button" id="cSvg">Kopieer SVG</button><button class="btn" type="button" id="cPng">Kopieer PNG</button><button class="btn" type="button" id="cSwap">Wissel kleuren</button></div>
+    </div>
+    <div class="cmprev" id="cPrev"></div>
+  </div>
+</section>
+
+<section aria-labelledby="h-reg">
+  <div class="sechead"><div class="label">Gebruik</div><h2 id="h-reg">Zo staat het logo goed</h2></div>
+  <div class="rules">
+    <div class="rule"><h3>Vrije ruimte</h3>
+      <svg viewBox="0 0 520 300" role="img" aria-label="Vrije ruimte rond het logo is de breedte van een H-blok">
+        <rect x="0" y="0" width="520" height="300" rx="4" fill="var(--raise)"/>
+        <rect x="68" y="58" width="384" height="184" fill="none" stroke="var(--geel)" stroke-width="2" stroke-dasharray="6 5"/>
+        <svg x="110" y="100" width="300" height="168" viewBox="0 0 1502 841" style="color:var(--ink)"><use href="#dhc"/></svg>
+        <rect x="244.8" y="58" width="30.4" height="42" fill="var(--geel)" opacity=".85"/>
+        <rect x="68" y="146" width="42" height="24" fill="var(--geel)" opacity=".85"/>
+        <text x="260" y="40" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="var(--muted)">vrije ruimte = breedte van één H-blok</text>
+      </svg>
+      <p class="note">Houd rondom minstens de breedte van een H-blok vrij: ongeveer een vijfde van de logohoogte. Tekst, randen en foto's blijven daarbuiten.</p></div>
+    <div class="rule"><h3>Minimale maat</h3>
+      <svg viewBox="0 0 520 300" role="img" aria-label="Minimale maat van het logo in druk en op scherm">
+        <rect x="0" y="0" width="520" height="300" rx="4" fill="var(--raise)"/>
+        <svg x="60" y="110" width="160" height="90" viewBox="0 0 1502 841" style="color:var(--ink)"><use href="#dhc"/></svg>
+        <svg x="300" y="134" width="64" height="36" viewBox="0 0 1502 841" style="color:var(--ink)"><use href="#dhc"/></svg>
+        <svg x="410" y="143" width="32" height="18" viewBox="0 0 1502 841" style="color:var(--ink)"><use href="#dhc"/></svg>
+        <text x="140" y="240" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="var(--muted)">liefst groter</text>
+        <text x="332" y="240" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="var(--ink)">20 mm · 64 px</text>
+        <text x="426" y="240" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="var(--bad)">te klein</text>
+      </svg>
+      <p class="note">In druk minimaal 20 mm breed, op een scherm minimaal 64 pixels. Kleiner vallen de dunne staven weg. Voor favicons en profielfoto's is er een apart icoon.</p></div>
+    <div class="rule"><h3>Kleuren</h3>
+      <div class="swatches" id="swatches"></div>
+      <p class="note">Werkplaatszwart is de hoofdkleur van het logo. Geel en groen komen uit de campagnematerialen. Tik op een kleur om de code te kopiëren; laat de drukker de CMYK-waarden bepalen.</p></div>
+    <div class="rule"><h3>Liever niet</h3>
+      <div class="dont" id="dont"></div>
+      <p class="note">Het logo bestaat uit precieze verhoudingen: de bogen sluiten exact aan op de staven. Vervormen, draaien of te weinig contrast maakt dat kapot.</p></div>
+  </div>
+</section>
+
+<section aria-labelledby="h-pat">
+  <div class="sechead"><div class="label">Patroonmaker</div><h2 id="h-pat">Patronen uit het logo</h2>
+    <p>Drie patronen, gebouwd uit de onderdelen van het logo: het ritme van de staven, de bogen als kettingschakels, en het logo zelf als raster. Geschikt voor een tafelkleed, de achterkant van een flyer of een achtergrond op het scherm.</p></div>
+  <div class="patmaker">
+    <div class="patctl">
+      <div><label class="l">Motief</label><div class="seg" id="pKind" role="group" aria-label="Motief"><button type="button" data-v="staven" class="on">Staven</button><button type="button" data-v="schakels">Schakels</button><button type="button" data-v="raster">Raster</button></div></div>
+      <div><label class="l">Kleur</label><div class="chips" id="pCol"></div></div>
+      <div><label class="l" for="pScale">Schaal</label><input type="range" id="pScale" min="0.05" max="0.5" step="0.01" value="0.18"></div>
+      <label style="display:flex;gap:8px;align-items:center;font-size:13px;cursor:pointer"><input type="checkbox" id="pAcc" checked style="accent-color:var(--ink);width:16px;height:16px"> Accentkleur gebruiken</label>
+      <button class="btn" type="button" id="pCopy">Kopieer patroon als SVG</button>
+      <p class="note">Kant-en-klare versies in vier kleuren staan in huisstijl/patronen/.</p>
+    </div>
+    <div class="patprev" id="pPrev"></div>
+  </div>
+</section>
+
+<section aria-labelledby="h-merch">
+  <div class="sechead"><div class="label">Merchandise en beurs</div><h2 id="h-merch">Zo ziet het eruit op de stand</h2>
+    <p>Voorbeelden om te laten zien aan het bestuur en aan de drukker. Alles is met één kleur te drukken, dus ook goedkoop bij een lokale textieldrukker of via de sticker- en drukwerksites.</p></div>
+  <div class="mocks" id="mocks"></div>
+</section>
+
+<section aria-labelledby="h-files">
+  <div class="sechead"><div class="label">Bestanden</div><h2 id="h-files">Wat staat er in de map huisstijl</h2></div>
+  <div class="tw"><table>
+    <thead><tr><th>Bestand</th><th>Waarvoor</th></tr></thead>
+    <tbody>
+      <tr><td class="f">dhc-logo-zwart.svg · -wit · -geel · -groen</td><td>Het beeldmerk als vector, voor drukwerk, textiel en ontwerpen. Wit is de inverse voor donkere ondergronden.</td></tr>
+      <tr><td class="f">dhc-logo-liggend-*.svg</td><td>Beeldmerk met de clubnaam ernaast. De twee regels lijnen uit met de H-blokken. Voor briefpapier, websitekop en roll-up.</td></tr>
+      <tr><td class="f">dhc-logo-staand-*.svg</td><td>Beeldmerk met de naam eronder en "Werkplaats sinds 1957 · Drachten". Voor posters en het eindbeeld van video's.</td></tr>
+      <tr><td class="f">dhc-icoon-*.svg</td><td>Vierkant icoon voor profielfoto's op Facebook en Instagram en voor app-iconen. Rond bijsnijden kan zonder het logo te raken.</td></tr>
+      <tr><td class="f">png/…-600.png · …-2400.png</td><td>Dezelfde bestanden als PNG met transparante achtergrond, voor Word, e-mail en social media.</td></tr>
+      <tr><td class="f">favicon.ico · dhc-favicon.svg</td><td>Het icoontje in het browsertabblad voor de website.</td></tr>
+      <tr><td class="f">animatie/</td><td>De logo-animatie als MP4 in 16:9, 9:16 en vierkant, plus een kleine GIF.</td></tr>
+      <tr><td class="f">patronen/</td><td>Twaalf patronen als SVG (drie motieven in vier kleuren), naadloos herhalend.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+</div>
+</main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/*PARTS*/
+/*ANIM*/
+/*PAT*/
+const VARIANTS = /*VARIANTS*/;
+const $ = s => document.querySelector(s);
+const MARK = '<svg viewBox="0 0 1502 841" style="color:%c"><use href="#dhc"/></svg>';
+const mark = c => MARK.replace('%c', c);
+function toast(t){ const el = $('#toast'); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(()=> el.hidden = true, 1800); }
+async function copy(text, done){
+  try { await navigator.clipboard.writeText(text); toast(done); }
+  catch(e){ const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); toast(done); } catch(_){ toast('Kopiëren lukte niet in deze weergave'); } ta.remove(); }
+}
+function segment(id, fn){ $(id).addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; $(id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); fn(b.dataset.v); }); }
+
+/* ---------- Animatie ---------- */
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let anim, t0 = 0, raf = 0, theme = 'licht', layout = 'liggend';
+function mountAnim(){
+  anim = DHCAnim.mount($('#stage'), {W:1600, H:1000, layout, theme, fit: layout === 'liggend' ? .74 : .5});
+  play();
+}
+function play(){
+  cancelAnimationFrame(raf);
+  if (reduce){ anim.render(anim.duration); return; }
+  t0 = performance.now();
+  const tick = now => { const t = (now - t0) / 1000; anim.render(Math.min(t, anim.duration)); if (t < anim.duration) raf = requestAnimationFrame(tick); };
+  raf = requestAnimationFrame(tick);
+}
+segment('#thm', v => { theme = v; mountAnim(); });
+segment('#lay', v => { layout = v; mountAnim(); });
+$('#replay').addEventListener('click', play);
+mountAnim();
+
+/* ---------- Varianten ---------- */
+const VLIST = [
+  ['dhc-logo-zwart.svg','Beeldmerk','#f8f8f5'],
+  ['dhc-logo-wit.svg','Beeldmerk, inverse','#2b2828'],
+  ['dhc-logo-liggend-zwart.svg','Liggend met naam','#f8f8f5'],
+  ['dhc-logo-staand-wit.svg','Staand met naam, inverse','#2d6a52'],
+  ['dhc-icoon-geel.svg','Icoon voor profielfoto','#ecece7'],
+  ['dhc-icoon-zwart.svg','Icoon, donker','#ecece7'],
+];
+$('#variants').innerHTML = VLIST.map(([f, n, bg]) => `<div class="var"><div class="pv" style="background:${bg}"><img alt="${n}" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(VARIANTS[f])}"></div>
+  <div class="meta"><div><b>${n}</b><span>${f}</span></div><button class="btn" type="button" data-copy="${f}">Kopieer SVG</button></div></div>`).join('');
+$('#variants').addEventListener('click', e => { const b = e.target.closest('[data-copy]'); if (b) copy(VARIANTS[b.dataset.copy], b.dataset.copy + ' gekopieerd'); });
+
+/* ---------- Kleuren ---------- */
+const COLORS = [['Werkplaatszwart','#2B2828','43 40 40'],['Signaalgeel','#F2B705','242 183 5'],['Machinegroen','#2D6A52','45 106 82'],['Papier','#EEE8DF','238 232 223']];
+$('#swatches').innerHTML = COLORS.map(([n,h,r]) => `<button type="button" class="sw" data-hex="${h}"><i style="background:${h}"></i><div><b>${n}</b><span>${h}</span><span>RGB ${r}</span></div></button>`).join('');
+$('#swatches').addEventListener('click', e => { const b = e.target.closest('[data-hex]'); if (b) copy(b.dataset.hex, b.dataset.hex + ' gekopieerd'); });
+
+/* ---------- Liever niet ---------- */
+const D = [
+  ['<svg viewBox="0 0 1502 841" style="color:#2b2828;transform:scaleX(1.45)"><use href="#dhc"/></svg>','Niet uitrekken of samendrukken','#f8f8f5'],
+  ['<svg viewBox="0 0 1502 841" style="color:#2b2828;transform:rotate(-14deg)"><use href="#dhc"/></svg>','Niet scheef zetten','#f8f8f5'],
+  [mark('#f2b705'),'Geen geel op wit of papier','#f8f8f5'],
+  [mark('#2b2828'),'Niet op een druk patroon zonder vlak','url'],
+];
+$('#dont').innerHTML = D.map(([s, c, bg], i) => `<figure><div class="box" style="${bg === 'url' ? '' : 'background:' + bg}" ${bg === 'url' ? 'data-busy' : ''}>${s}</div><figcaption>${c}</figcaption></figure>`).join('');
+const busy = document.querySelector('[data-busy]'); busy.style.background = `center/cover url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(DHCPatterns.svg('schakels', {bg:'#f2b705', fg:'#2d6a52'}, .06, 400, 300))}")`;
+
+
+/* ---------- Kleurenmaker ---------- */
+const PRESETS = ['#2B2828','#FFFFFF','#F2B705','#2D6A52','#EEE8DF','#C94F3B','#3F72C0','#E8612C','#7A4E9E','#9AA3A8'];
+const FORMS = (() => {
+  const P = DHC_PARTS.parts, M = [P.Dbowl, P.Dbar, P.Htop, P.Hbot, P.Cbowl, P.Cbar].join(' ');
+  return {
+    beeldmerk: {w:1502, h:841, pad:120, body: fg => `<path fill="${fg}" fill-rule="evenodd" d="${M}"/>`},
+    liggend: {w:DHC_PARTS.liggend.w, h:841, pad:140, body: fg => `<path fill="${fg}" fill-rule="evenodd" d="${M}"/><path fill="${fg}" d="${DHC_PARTS.liggend.l1} ${DHC_PARTS.liggend.l2}"/>`},
+    staand: {w:1502, h:DHC_PARTS.staand.h, pad:140, body: fg => `<path fill="${fg}" fill-rule="evenodd" d="${M}"/><path fill="${fg}" d="${DHC_PARTS.staand.l1} ${DHC_PARTS.staand.l2}"/>`},
+    icoon: {w:1502, h:841, square:true, body: fg => `<path fill="${fg}" fill-rule="evenodd" d="${M}"/>`},
+  };
+})();
+let cForm = 'beeldmerk';
+function colSvg(forFile){
+  const f = FORMS[cForm], fg = $('#cFgT').value, bg = $('#cBgT').value, tr = forFile && $('#cTr').checked;
+  if (f.square){ const S = 2400, s = S*0.62/1502, x = (S - 1502*s)/2, y = (S - 841*s)/2;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${S} ${S}" width="${S}" height="${S}">${tr ? '' : `<rect width="${S}" height="${S}" fill="${bg}"/>`}<g transform="translate(${x} ${y}) scale(${s})">${f.body(fg)}</g></svg>`; }
+  const p = forFile ? f.pad : 0, W = f.w + 2*p, H = f.h + 2*p;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-p} ${-p} ${W} ${H}" width="${W}" height="${H}">${forFile && !tr ? `<rect x="${-p}" y="${-p}" width="${W}" height="${H}" fill="${bg}"/>` : ''}${f.body(fg)}</svg>`;
+}
+function lum(h){ const c = [1,3,5].map(i => parseInt(h.substr(i,2),16)/255).map(v => v <= .03928 ? v/12.92 : Math.pow((v+.055)/1.055, 2.4)); return .2126*c[0] + .7152*c[1] + .0722*c[2]; }
+function drawCol(){
+  const fg = $('#cFgT').value, bg = $('#cBgT').value;
+  $('#cPrev').style.background = bg; $('#cPrev').innerHTML = colSvg(false);
+  const a = lum(fg), b = lum(bg), r = (Math.max(a,b) + .05)/(Math.min(a,b) + .05);
+  const [cls, t] = r >= 4.5 ? ['ok','Goed leesbaar'] : r >= 3 ? ['meh','Alleen groot gebruiken'] : ['bad','Te weinig contrast'];
+  $('#cCon').innerHTML = `<span class="mono">Contrast ${r.toFixed(1).replace('.',',')} : 1</span><i class="${cls}">${t}</i>`;
+}
+const HEX = /^#[0-9A-Fa-f]{6}$/;
+function bindPick(id){
+  const c = $('#'+id), t = $('#'+id+'T');
+  c.addEventListener('input', () => { t.value = c.value.toUpperCase(); drawCol(); });
+  t.addEventListener('input', () => { let v = t.value.trim(); if (v[0] !== '#') v = '#' + v; if (HEX.test(v)){ t.value = v.toUpperCase(); c.value = v.toLowerCase(); drawCol(); } });
+  $('#'+id+'Dots').innerHTML = PRESETS.map(h => `<button type="button" style="background:${h}" data-h="${h}" aria-label="${h}" title="${h}"></button>`).join('');
+  $('#'+id+'Dots').addEventListener('click', e => { const b = e.target.closest('[data-h]'); if (!b) return; t.value = b.dataset.h; c.value = b.dataset.h.toLowerCase(); drawCol(); });
+}
+bindPick('cFg'); bindPick('cBg');
+segment('#cVar', v => { cForm = v; drawCol(); });
+$('#cSwap').addEventListener('click', () => { const a = $('#cFgT').value, b = $('#cBgT').value; $('#cFgT').value = b; $('#cFg').value = b.toLowerCase(); $('#cBgT').value = a; $('#cBg').value = a.toLowerCase(); drawCol(); });
+$('#cSvg').addEventListener('click', () => copy(colSvg(true), 'SVG gekopieerd'));
+$('#cPng').addEventListener('click', async () => {
+  try {
+    const svgTxt = colSvg(true), m = svgTxt.match(/width="([\d.]+)" height="([\d.]+)"/), k = 2000 / Math.max(+m[1], +m[2]);
+    const img = new Image(); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgTxt); await img.decode();
+    const cv = document.createElement('canvas'); cv.width = Math.round(m[1]*k); cv.height = Math.round(m[2]*k); cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+    const blob = await new Promise(res => cv.toBlob(res, 'image/png'));
+    await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]); toast('PNG gekopieerd, plak hem in je ontwerp');
+  } catch(e){ toast('PNG kopiëren lukt hier niet; gebruik Kopieer SVG'); }
+});
+drawCol();
+
+/* ---------- Patroonmaker ---------- */
+const PCOL = {geel:{n:'Geel', bg:'#F2B705', fg:'#2B2828', acc:'#FFFFFF'}, groen:{n:'Groen', bg:'#2D6A52', fg:'#FFFFFF', acc:'#F2B705'}, papier:{n:'Papier', bg:'#EEE8DF', fg:'#2B2828', acc:'#F2B705'}, zwart:{n:'Zwart', bg:'#2B2828', fg:'#3D3A3A', acc:'#F2B705'}};
+let pk = 'staven', pc = 'groen';
+$('#pCol').innerHTML = Object.entries(PCOL).map(([k, c]) => `<button type="button" class="chip ${k === pc ? 'on' : ''}" data-c="${k}"><i style="background:${c.bg}"></i>${c.n}</button>`).join('');
+$('#pCol').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (!b) return; pc = b.dataset.c; $('#pCol').querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b)); drawPat(); });
+segment('#pKind', v => { pk = v; drawPat(); });
+$('#pScale').addEventListener('input', drawPat); $('#pAcc').addEventListener('change', drawPat);
+function patSvg(W = 1200, H = 700){ const c = {...PCOL[pc]}; if (!$('#pAcc').checked) delete c.acc; return DHCPatterns.svg(pk, c, +$('#pScale').value, W, H); }
+function drawPat(){ $('#pPrev').innerHTML = patSvg().replace('<svg ', '<svg preserveAspectRatio="xMidYMid slice" '); }
+$('#pCopy').addEventListener('click', () => copy(patSvg(2000, 2000), 'Patroon gekopieerd (2000 × 2000)'));
+drawPat();
+
+/* ---------- Mockups ---------- */
+const FONT_D = "'Big Shoulders Display', 'Arial Narrow', sans-serif", FONT_M = "'IBM Plex Mono', monospace", FONT_B = "'IBM Plex Sans', sans-serif";
+const use = (x, y, w, col, extra = '') => `<svg x="${x}" y="${y}" width="${w}" height="${(w * 841 / 1502).toFixed(1)}" viewBox="0 0 1502 841" style="color:${col}" ${extra}><use href="#dhc"/></svg>`;
+function patDefs(id, kind, c, s){ const t = DHCPatterns.tile(kind, c, DHC_PARTS.parts); return `<pattern id="${id}" patternUnits="userSpaceOnUse" width="${t.w}" height="${t.h}" patternTransform="scale(${s})">${t.body}</pattern>`; }
+const MOCKS = [
+  {t:'Werkschort', p:'Canvas schort voor vrijwilligers aan de machines. Wit logo op de borst, zakje voor potlood en duimstok.', n:'Aanleveren: dhc-logo-wit.svg, 1 kleur zeefdruk of transfer',
+   svg:`<svg viewBox="0 0 400 400" role="img" aria-label="Werkschort met DHC-logo">
+    <path d="M150 34 Q200 -6 250 34" fill="none" stroke="#8b5a2b" stroke-width="9" stroke-linecap="round"/>
+    <path d="M140 40 H260 L268 150 Q330 158 336 170 L326 368 Q324 380 312 380 H88 Q76 380 74 368 L64 170 Q70 158 132 150 Z" fill="#2f3438"/>
+    <path d="M146 48 H254 L261 154 Q318 162 324 172 L315 362 Q314 370 306 370 H94 Q86 370 85 362 L76 172 Q82 162 139 154 Z" fill="none" stroke="#596066" stroke-width="1.6" stroke-dasharray="5 4"/>
+    <path d="M64 172 Q20 176 6 196" fill="none" stroke="#8b5a2b" stroke-width="8" stroke-linecap="round"/><path d="M336 172 Q380 176 394 196" fill="none" stroke="#8b5a2b" stroke-width="8" stroke-linecap="round"/>
+    ${use(150, 74, 100, '#ffffff')}
+    <rect x="120" y="250" width="160" height="78" rx="3" fill="#353b40" stroke="#596066" stroke-width="1.6" stroke-dasharray="5 4"/>
+    <line x1="200" y1="250" x2="200" y2="328" stroke="#596066" stroke-width="1.6" stroke-dasharray="5 4"/>
+    <rect x="146" y="214" width="9" height="58" rx="2" fill="#f2b705" transform="rotate(-8 150 240)"/><path d="M145.5 214 l4.5 -10 l4.5 10 z" fill="#e9d9b8" transform="rotate(-8 150 240)"/>
+    <rect x="222" y="226" width="22" height="40" fill="#d8b04a" transform="rotate(6 233 246)"/><g stroke="#2b2828" stroke-width="1" transform="rotate(6 233 246)"><line x1="222" y1="232" x2="230" y2="232"/><line x1="222" y1="238" x2="227" y2="238"/><line x1="222" y1="244" x2="230" y2="244"/><line x1="222" y1="250" x2="227" y2="250"/></g>
+    <text x="200" y="352" text-anchor="middle" font-family="${FONT_M}" font-size="11" fill="#8f979d" letter-spacing="2">SINDS 1957</text></svg>`},
+  {t:'Vrijwilligersshirt', p:'Groen shirt met een groot logo op de rug. Herkenbaar vanaf de andere kant van de hal.', n:'Aanleveren: dhc-logo-staand-wit.svg op de rug, beeldmerk 8 cm op de borst',
+   svg:`<svg viewBox="0 0 400 400" role="img" aria-label="Groen T-shirt met DHC-logo op de rug">
+    <path d="M136 36 Q200 58 264 36 L338 70 L382 140 L330 168 L312 144 L312 372 Q312 380 304 380 H96 Q88 380 88 372 L88 144 L70 168 L18 140 L62 70 Z" fill="#2d6a52"/>
+    <path d="M136 36 Q200 50 264 36" fill="none" stroke="#24563f" stroke-width="7"/>
+    ${use(124, 104, 152, '#ffffff')}
+    <text x="200" y="230" text-anchor="middle" font-family="${FONT_D}" font-weight="900" font-size="40" fill="#ffffff" letter-spacing="1">VRIJWILLIGER</text>
+    <text x="200" y="256" text-anchor="middle" font-family="${FONT_M}" font-size="13" fill="#f2b705" letter-spacing="1.5">VRAAG MIJ MAAR</text>
+    <text x="200" y="300" text-anchor="middle" font-family="${FONT_M}" font-size="10" fill="#bcd6ca" letter-spacing="1">drachtsterhobbyclub.nl</text></svg>`},
+  {t:'Emaille mok', p:'De koffie op de stand, in een mok die bij een werkplaats past. Ook leuk als bedankje voor vrijwilligers.', n:'Aanleveren: dhc-logo-zwart.svg, 1 kleur',
+   svg:`<svg viewBox="0 0 400 400" role="img" aria-label="Witte emaille mok met zwart DHC-logo">
+    <g fill="none" stroke="#9a9a94" stroke-width="3" stroke-linecap="round" opacity=".6"><path d="M170 92 q-12 -18 0 -36 q12 -18 0 -36"/><path d="M205 92 q-12 -18 0 -36 q12 -18 0 -36"/><path d="M240 92 q-12 -18 0 -36 q12 -18 0 -36"/></g>
+    <path d="M312 160 q52 0 52 56 q0 56 -56 60" fill="none" stroke="#f4f3ef" stroke-width="20"/><path d="M312 160 q52 0 52 56 q0 56 -56 60" fill="none" stroke="#2b2828" stroke-width="20" stroke-dasharray="0" opacity=".08"/>
+    <path d="M96 110 H316 V318 Q316 340 294 340 H118 Q96 340 96 318 Z" fill="#f4f3ef"/>
+    <ellipse cx="206" cy="110" rx="110" ry="14" fill="#e6e4de"/><path d="M96 110 a110 14 0 0 0 220 0" fill="none" stroke="#2b2828" stroke-width="7"/><path d="M96 110 a110 14 0 0 1 220 0" fill="none" stroke="#2b2828" stroke-width="7"/>
+    <path d="M96 318 Q96 340 118 340 H294 Q316 340 316 318" fill="none" stroke="#2b2828" stroke-width="7"/>
+    ${use(138, 178, 136, '#2b2828')}
+    <path d="M110 150 q6 -4 9 2 q2 6 -5 7 q-7 0 -4 -9z" fill="#3b3a38"/>
+    <text x="206" y="292" text-anchor="middle" font-family="${FONT_M}" font-size="11" fill="#6b6a66" letter-spacing="2">KOFFIE · SINDS 1957</text></svg>`},
+  {t:'Stickers', p:'"Zelf gemaakt bij de DHC" op werkstukken en gereedschapskisten, en een logosticker voor laptops en helmen.', n:'Aanleveren: rond 60 mm en contour gesneden 80 mm',
+   svg:`<svg viewBox="0 0 400 400" role="img" aria-label="Stickers met het DHC-logo">
+    <defs><path id="circ" d="M150 150 m-96 0 a96 96 0 1 1 192 0 a96 96 0 1 1 -192 0"/><filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity=".25"/></filter></defs>
+    <g filter="url(#sh)"><circle cx="150" cy="150" r="124" fill="#ffffff"/><circle cx="150" cy="150" r="118" fill="#f2b705"/></g>
+    <text font-family="${FONT_D}" font-weight="900" font-size="25" fill="#2b2828" letter-spacing="3"><textPath href="#circ" startOffset="0">ZELF GEMAAKT BIJ DE DHC · SINDS 1957 ·</textPath></text>
+    ${use(98, 121, 104, '#2b2828')}
+    <g transform="rotate(-7 290 300)" filter="url(#sh)"><rect x="196" y="248" width="188" height="112" rx="16" fill="#ffffff"/><rect x="202" y="254" width="176" height="100" rx="12" fill="#2b2828"/>${use(234, 271, 112, '#ffffff')}</g>
+    <g filter="url(#sh)"><circle cx="76" cy="330" r="46" fill="#ffffff"/><circle cx="76" cy="330" r="41" fill="#2d6a52"/></g>
+    <text x="76" y="326" text-anchor="middle" font-family="${FONT_D}" font-weight="900" font-size="24" fill="#ffffff">LID</text><text x="76" y="350" text-anchor="middle" font-family="${FONT_M}" font-size="15" fill="#f2b705">2026</text></svg>`},
+  {t:'Naambadge', p:'Voor iedereen op de stand. Bezoekers zien meteen wie ze iets kunnen vragen en waar die persoon goed in is.', n:'Zelf printen op A4-badgekaarten of laten maken als PVC-kaart met koord',
+   svg:`<svg viewBox="0 0 400 400" role="img" aria-label="Naambadge met DHC-logo aan een geel koord">
+    <path d="M150 0 L178 112 M250 0 L222 112" stroke="#f2b705" stroke-width="16"/><g fill="#2b2828" opacity=".5">${[0,1,2,3,4].map(i => `<rect x="${154 + i*5.6}" y="${10 + i*20}" width="7" height="3"/><rect x="${239 - i*5.6}" y="${10 + i*20}" width="7" height="3"/>`).join('')}</g>
+    <rect x="186" y="104" width="28" height="22" rx="4" fill="#9a9a94"/>
+    <rect x="96" y="122" width="208" height="260" rx="12" fill="#ffffff" stroke="#d4d5ce"/>
+    <path d="M96 134 q0 -12 12 -12 h184 q12 0 12 12 v66 h-208z" fill="#2b2828"/>
+    ${use(146, 138, 108, '#ffffff')}
+    <text x="200" y="262" text-anchor="middle" font-family="${FONT_D}" font-weight="900" font-size="46" fill="#2b2828">VOORNAAM</text>
+    <text x="200" y="290" text-anchor="middle" font-family="${FONT_B}" font-weight="600" font-size="15" fill="#636660">Draaibank · lassen</text>
+    <rect x="140" y="318" width="120" height="30" rx="15" fill="#f2b705"/><text x="200" y="338" text-anchor="middle" font-family="${FONT_B}" font-weight="700" font-size="13" fill="#1f1a00">Vrijwilliger</text></svg>`},
+  {t:'Draagtas', p:'Katoenen tas voor flyers en een proefstukje. Bezoekers lopen er de rest van de middag mee door De Sluisfabriek.', n:'Aanleveren: dhc-logo-staand-zwart.svg, 1 kleur op naturel katoen',
+   svg:`<svg viewBox="0 0 400 400" role="img" aria-label="Katoenen draagtas met DHC-logo">
+    <path d="M150 140 V96 q0 -56 50 -56 q50 0 50 56 V140" fill="none" stroke="#d9cdb4" stroke-width="14"/>
+    <path d="M92 132 H308 L322 378 H78 Z" fill="#e9dfcc"/><path d="M92 132 H308 L309 146 H91 Z" fill="#ddd1b9"/>
+    ${use(128, 186, 144, '#2b2828')}
+    <text x="200" y="300" text-anchor="middle" font-family="${FONT_D}" font-weight="900" font-size="30" fill="#2b2828">ZELF GEMAAKT</text>
+    <text x="200" y="322" text-anchor="middle" font-family="${FONT_M}" font-size="11" fill="#5a544b" letter-spacing="1.5">DRACHTEN · SINDS 1957</text></svg>`},
+];
+function standSvg(){
+  return `<svg viewBox="0 0 800 400" role="img" aria-label="Beurstafel met bedrukt tafelkleed en roll-up met het DHC-logo">
+    <defs>${patDefs('kleed', 'staven', {bg:'#2d6a52', fg:'#2b5f4a'}, .05)}</defs>
+    <rect x="0" y="352" width="800" height="48" fill="#bdbdb6" opacity=".55"/>
+    <g><rect x="540" y="40" width="160" height="320" fill="#2b2828"/><rect x="532" y="352" width="176" height="14" rx="3" fill="#7d7d78"/>
+      ${use(570, 70, 100, '#ffffff')}
+      <text x="620" y="164" text-anchor="middle" font-family="${FONT_D}" font-weight="900" font-size="34" fill="#ffffff">ZELF MAKEN?</text>
+      <text x="620" y="194" text-anchor="middle" font-family="${FONT_D}" font-weight="900" font-size="26" fill="#f2b705">€ 85 PER JAAR</text>
+      <text x="620" y="214" text-anchor="middle" font-family="${FONT_M}" font-size="10" fill="#d6d3cd">alle machines inbegrepen</text>
+      <rect x="590" y="244" width="60" height="60" fill="#ffffff"/><g fill="#2b2828">${[0,1,2,3,4,5,6].flatMap(r => [0,1,2,3,4,5,6].map(c => ((r*7+c)*37 % 5 < 2 || (r<2&&c<2) || (r<2&&c>4) || (r>4&&c<2)) ? `<rect x="${594 + c*7.4}" y="${248 + r*7.4}" width="7.4" height="7.4"/>` : '')).join('')}</g>
+      <text x="620" y="330" text-anchor="middle" font-family="${FONT_M}" font-size="9" fill="#d6d3cd">scan en word lid</text></g>
+    <rect x="70" y="206" width="420" height="10" fill="#8a8a85"/>
+    <rect x="76" y="216" width="408" height="150" fill="url(#kleed)"/>
+    <rect x="200" y="238" width="160" height="104" fill="#eee8df"/>
+    ${use(220, 252, 120, '#2b2828')}
+    <text x="280" y="332" text-anchor="middle" font-family="${FONT_M}" font-size="10" fill="#2b2828" letter-spacing="2">SINDS 1957</text>
+    <rect x="110" y="170" width="54" height="36" rx="3" fill="#c94f3b"/><rect x="118" y="160" width="38" height="12" rx="2" fill="#c94f3b"/>
+    <path d="M402 206 v-36 h22 v36 z" fill="#f4f3ef" stroke="#2b2828" stroke-width="3"/><path d="M424 178 q14 0 14 10 q0 10 -14 10" fill="none" stroke="#2b2828" stroke-width="3"/>
+    <rect x="300" y="176" width="70" height="30" fill="#eee8df" stroke="#d4d5ce"/><text x="335" y="196" text-anchor="middle" font-family="${FONT_M}" font-size="9" fill="#2b2828">flyers</text></svg>`;
+}
+$('#mocks').innerHTML = MOCKS.map(m => `<div class="mock"><div class="art">${m.svg}</div><div class="txt"><h3>${m.t}</h3><p>${m.p}</p><span class="note">${m.n}</span></div></div>`).join('')
+  + `<div class="mock wide"><div class="art">${standSvg()}</div><div class="txt"><h3>De stand in De Sluisfabriek</h3><p>Tafelkleed met het stavenpatroon in machinegroen en het logo op een papierkleurig vlak, met de roll-up ernaast. Op 28 oktober zie je dit van ver.</p><span class="note">Tafelkleed: dhc-patroon-staven-groen.svg + dhc-logo-zwart.svg · roll-up 85 × 200 cm</span></div></div>`;
+</script>
