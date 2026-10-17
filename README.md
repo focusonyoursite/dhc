@@ -12,7 +12,7 @@ Alle promotiematerialen van DHC voor Drachten Maakt 't 2026: huisstijl, campagne
 
 ## Openen
 
-Start bij `huisstijl/dhc-beurskit.html`. Alle HTML-pagina's werken los in de browser. De planner en de studio bewaren je werk buiten claude.ai in de browser zelf.
+Start bij `index.html`, die doorstuurt naar `huisstijl/dhc-beurskit.html`. Alle HTML-pagina's werken los in de browser en via GitHub Pages; de Beurskit en de huisstijlpagina linken onderling met relatieve paden. De planner en de studio bewaren je werk in de browser zelf.
 
 ## Huisstijl in het kort
 
